@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cari Petani &amp; Proyek Pertanian</title>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        box-sizing: border-box;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      .main-container {
+        height: 100%;
+        overflow-y: auto;
+        background: linear-gradient(135deg, #f5f3ef 0%, #e8e5dd 100%);
+      }
+
+      .card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(27, 67, 50, 0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 32px rgba(27, 67, 50, 0.15);
+        border-color: #d4af37;
+      }
+
+      .project-card {
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .project-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #1b4332, #2d6a4f, #d4af37);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .project-card:hover::before {
+        opacity: 1;
+      }
+
+      .search-input {
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 14px 20px 14px 48px;
+        font-size: 15px;
+        transition: all 0.3s;
+        width: 100%;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #d4af37;
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+      }
+
+      .filter-btn {
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        background: white;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #1b4332;
+      }
+
+      .filter-btn:hover {
+        border-color: #d4af37;
+        background: #fff9e6;
+      }
+
+      .filter-btn.active {
+        background: linear-gradient(135deg, #1b4332, #2d6a4f);
+        color: white;
+        border-color: #1b4332;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #2d6a4f, #52b788);
+        transition: width 0.5s ease;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .badge-low {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .badge-medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .badge-high {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .badge-verified {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #1b4332, #2d6a4f);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(27, 67, 50, 0.3);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: #1b4332;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 700;
+        border: 2px solid #1b4332;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+      }
+
+      .btn-secondary:hover {
+        background: #1b4332;
+        color: white;
+      }
+
+      .btn-gold {
+        background: linear-gradient(135deg, #d4af37, #b8941f);
+        color: #1b4332;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+      }
+
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+      }
+
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 900px;
+        width: 100%;
+        max-height: 90%;
+        overflow-y: auto;
+        position: relative;
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .sidebar-filter {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(27, 67, 50, 0.08);
+        position: sticky;
+        top: 20px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .checkbox-item:hover {
+        background: #f9fafb;
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #2d6a4f;
+      }
+
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        padding-bottom: 24px;
+      }
+
+      .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 35px;
+        bottom: 0;
+        width: 2px;
+        background: #e5e7eb;
+      }
+
+      .timeline-item:last-child::before {
+        display: none;
+      }
+
+      .timeline-dot {
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #2d6a4f;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px #2d6a4f;
+      }
+
+      .farmer-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1b4332, #2d6a4f);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(27, 67, 50, 0.2);
+      }
+
+      .land-photo {
+        width: 100%;
+        height: 180px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #52b788, #2d6a4f);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 64px;
+        margin-bottom: 16px;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar-filter {
+          position: static;
+          margin-bottom: 20px;
+        }
+      }
+    </style>
+    <style>
+      @view-transition {
+        navigation: auto;
+      }
+    </style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div class="main-container">
+      <!-- Header Section -->
+      <div
+        style="
+          background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+          padding: 40px 20px;
+        "
+      >
+        <div style="max-width: 1400px; margin: 0 auto">
+          <div class="flex items-center gap-3 mb-6">
+            <div
+              style="
+                width: 50px;
+                height: 50px;
+                background: #d4af37;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+              "
+            >
+              🌾
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold text-white" id="page-title">
+                Cari Petani &amp; Proyek Pertanian
+              </h1>
+              <p class="text-sm" style="color: #d4af37" id="page-subtitle">
+                Temukan peluang investasi terbaik dari petani terverifikasi
+              </p>
+            </div>
+          </div>
+          <!-- Search Bar -->
+          <div class="relative mb-6">
+            <span
+              style="
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 20px;
+              "
+              >🔍</span
+            >
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Cari berdasarkan nama petani, jenis tanaman, atau lokasi..."
+            />
+          </div>
+          <!-- Filter Buttons -->
+          <div class="flex flex-wrap gap-3">
+            <button class="filter-btn" onclick="sortProjects('roi')">
+              📊 ROI Tertinggi
+            </button>
+            <button class="filter-btn" onclick="sortProjects('risk')">
+              🛡️ Risiko Terendah
+            </button>
+            <button class="filter-btn" onclick="sortProjects('duration')">
+              ⏱️ Durasi Terpendek
+            </button>
+            <button class="filter-btn" onclick="sortProjects('funding')">
+              💰 Dana Dibutuhkan
+            </button>
+            <button
+              class="filter-btn"
+              onclick="resetFilters()"
+              style="background: #fee2e2; color: #991b1b; border-color: #fee2e2"
+            >
+              🔄 Reset Filter
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Main Content -->
+      <div style="max-width: 1400px; margin: 0 auto; padding: 40px 20px">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <!-- Sidebar Filter -->
+          <div class="lg:col-span-1">
+            <div class="sidebar-filter">
+              <h3 class="font-bold text-lg mb-4" style="color: #1b4332">
+                Filter Cepat
+              </h3>
+              <!-- Jenis Tanaman -->
+              <div class="mb-6">
+                <p class="font-semibold text-sm mb-3" style="color: #1b4332">
+                  🌱 Jenis Tanaman
+                </p>
+                <div class="space-y-2">
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="padi"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Padi</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="cabai"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Cabai</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="jagung"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Jagung</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="sayuran"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Sayuran</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="buah"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Buah-buahan</span>
+                  </label>
+                </div>
+              </div>
+              <!-- Lokasi -->
+              <div class="mb-6">
+                <p class="font-semibold text-sm mb-3" style="color: #1b4332">
+                  📍 Lokasi Wilayah
+                </p>
+                <div class="space-y-2">
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="jawa-barat"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Jawa Barat</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="jawa-tengah"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Jawa Tengah</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="jawa-timur"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Jawa Timur</span>
+                  </label>
+                </div>
+              </div>
+              <!-- Status Proyek -->
+              <div class="mb-6">
+                <p class="font-semibold text-sm mb-3" style="color: #1b4332">
+                  ✅ Status Proyek
+                </p>
+                <div class="space-y-2">
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="baru"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Baru Dibuka</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="hampir-penuh"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Hampir Penuh</span>
+                  </label>
+                </div>
+              </div>
+              <!-- Kisaran Modal -->
+              <div>
+                <p class="font-semibold text-sm mb-3" style="color: #1b4332">
+                  💵 Kisaran Modal
+                </p>
+                <div class="space-y-2">
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="0-5"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">&lt; Rp 5 Juta</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="5-10"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Rp 5 - 10 Juta</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="10-50"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">Rp 10 - 50 Juta</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input
+                      type="checkbox"
+                      value="50+"
+                      onchange="applyFilters()"
+                    />
+                    <span class="text-sm">&gt; Rp 50 Juta</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Project Grid -->
+          <div class="lg:col-span-3">
+            <div class="mb-4 flex justify-between items-center">
+              <p class="text-sm" style="color: #6b7280">
+                <span id="project-count">12</span> proyek ditemukan
+              </p>
+            </div>
+            <div
+              id="projects-grid"
+              class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+            >
+              <!-- Projects will be rendered here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal">
+      <div class="modal-content">
+        <div id="modal-body"><!-- Modal content will be inserted here --></div>
+      </div>
+    </div>
+    <script>
+      const defaultConfig = {
+        page_title: "Cari Petani & Proyek Pertanian",
+        page_subtitle:
+          "Temukan peluang investasi terbaik dari petani terverifikasi",
+      };
+
+      async function onConfigChange(config) {
+        const pageTitle = config.page_title || defaultConfig.page_title;
+        const pageSubtitle =
+          config.page_subtitle || defaultConfig.page_subtitle;
+
+        document.getElementById("page-title").textContent = pageTitle;
+        document.getElementById("page-subtitle").textContent = pageSubtitle;
+      }
+
+      function mapToCapabilities(config) {
+        return {
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined,
+        };
+      }
+
+      function mapToEditPanelValues(config) {
+        return new Map([
+          ["page_title", config.page_title || defaultConfig.page_title],
+          [
+            "page_subtitle",
+            config.page_subtitle || defaultConfig.page_subtitle,
+          ],
+        ]);
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues,
+        });
+      }
+
+      // Project Data
+      const projects = [
+        {
+          id: 1,
+          farmer: "Pak Suryanto",
+          farmerIcon: "👨‍🌾",
+          project: "Padi Organik Desa Harapan",
+          type: "padi",
+          location: "Subang, Jawa Barat",
+          region: "jawa-barat",
+          fundNeeded: 60000000,
+          fundCurrent: 39000000,
+          roi: 20,
+          duration: 4,
+          harvest: "Januari 2026",
+          risk: "low",
+          status: "baru",
+          description:
+            "Proyek budidaya padi organik dengan metode SRI (System of Rice Intensification) di lahan sawah seluas 3.5 hektar. Menggunakan pupuk organik dan pestisida alami untuk menghasilkan beras berkualitas premium.",
+          landIcon: "🌾",
+          profitShare: "70% Petani - 30% Investor",
+          area: "3.5 Ha",
+          method: "SRI Organik",
+          timeline: [
+            {
+              phase: "Persiapan Lahan",
+              date: "September 2025",
+              status: "done",
+            },
+            { phase: "Penanaman", date: "Oktober 2025", status: "done" },
+            {
+              phase: "Perawatan & Pemupukan",
+              date: "Nov - Des 2025",
+              status: "progress",
+            },
+            { phase: "Panen", date: "Januari 2026", status: "pending" },
+            {
+              phase: "Penjualan & Bagi Hasil",
+              date: "Februari 2026",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Pak Suryanto telah menyelesaikan 5 proyek dengan tingkat keberhasilan 100% dan ROI rata-rata 18%.",
+        },
+        {
+          id: 2,
+          farmer: "Bu Siti Aminah",
+          farmerIcon: "👩‍🌾",
+          project: "Cabai Merah Keriting Premium",
+          type: "cabai",
+          location: "Garut, Jawa Barat",
+          region: "jawa-barat",
+          fundNeeded: 35000000,
+          fundCurrent: 14000000,
+          roi: 28,
+          duration: 3.5,
+          harvest: "Desember 2025",
+          risk: "medium",
+          status: "baru",
+          description:
+            "Budidaya cabai merah keriting varietas unggul dengan sistem irigasi tetes dan greenhouse modern. Target produksi 3.2 ton dengan kualitas ekspor.",
+          landIcon: "🌶️",
+          profitShare: "65% Petani - 35% Investor",
+          area: "1.2 Ha",
+          method: "Greenhouse Modern",
+          timeline: [
+            {
+              phase: "Persiapan Greenhouse",
+              date: "Agustus 2025",
+              status: "done",
+            },
+            { phase: "Pembibitan", date: "September 2025", status: "done" },
+            { phase: "Penanaman", date: "Oktober 2025", status: "progress" },
+            {
+              phase: "Perawatan Intensif",
+              date: "Nov 2025",
+              status: "pending",
+            },
+            {
+              phase: "Panen & Distribusi",
+              date: "Desember 2025",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Bu Siti adalah petani berpengalaman 15 tahun dengan 8 proyek sukses dan ROI tertinggi 32%.",
+        },
+        {
+          id: 3,
+          farmer: "Pak Budi Santoso",
+          farmerIcon: "👨‍🌾",
+          project: "Jagung Manis Hibrida",
+          type: "jagung",
+          location: "Kediri, Jawa Timur",
+          region: "jawa-timur",
+          fundNeeded: 45000000,
+          fundCurrent: 36000000,
+          roi: 22,
+          duration: 3,
+          harvest: "November 2025",
+          risk: "low",
+          status: "hampir-penuh",
+          description:
+            "Penanaman jagung manis hibrida varietas Bonanza di lahan produktif dengan sistem pengairan yang baik. Pasar sudah terjamin dengan kontrak ke supermarket lokal.",
+          landIcon: "🌽",
+          profitShare: "70% Petani - 30% Investor",
+          area: "2.8 Ha",
+          method: "Konvensional Intensif",
+          timeline: [
+            { phase: "Pengolahan Tanah", date: "Juli 2025", status: "done" },
+            { phase: "Penanaman", date: "Agustus 2025", status: "done" },
+            {
+              phase: "Pemupukan & Perawatan",
+              date: "Sep 2025",
+              status: "progress",
+            },
+            { phase: "Panen", date: "November 2025", status: "pending" },
+            { phase: "Penjualan", date: "November 2025", status: "pending" },
+          ],
+          testimonial:
+            "Pak Budi memiliki track record 12 proyek berhasil dengan kepuasan investor 98%.",
+        },
+        {
+          id: 4,
+          farmer: "Pak Ahmad Fauzi",
+          farmerIcon: "👨‍🌾",
+          project: "Sayuran Hidroponik Premium",
+          type: "sayuran",
+          location: "Bandung, Jawa Barat",
+          region: "jawa-barat",
+          fundNeeded: 28000000,
+          fundCurrent: 22400000,
+          roi: 25,
+          duration: 2.5,
+          harvest: "Oktober 2025",
+          risk: "low",
+          status: "hampir-penuh",
+          description:
+            "Budidaya sayuran hidroponik (selada, kangkung, pakcoy) dengan teknologi NFT system. Produksi berkelanjutan dengan panen setiap 30 hari.",
+          landIcon: "🥬",
+          profitShare: "65% Petani - 35% Investor",
+          area: "0.5 Ha",
+          method: "Hidroponik NFT",
+          timeline: [
+            {
+              phase: "Setup Sistem Hidroponik",
+              date: "Juli 2025",
+              status: "done",
+            },
+            {
+              phase: "Pembibitan Batch 1",
+              date: "Agustus 2025",
+              status: "done",
+            },
+            {
+              phase: "Perawatan & Monitoring",
+              date: "Sep 2025",
+              status: "progress",
+            },
+            { phase: "Panen Batch 1", date: "Oktober 2025", status: "pending" },
+            {
+              phase: "Distribusi ke Retail",
+              date: "Oktober 2025",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Pak Ahmad adalah pionir hidroponik di Bandung dengan 6 proyek sukses dan ROI konsisten 24-26%.",
+        },
+        {
+          id: 5,
+          farmer: "Bu Ratna Dewi",
+          farmerIcon: "👩‍🌾",
+          project: "Tomat Cherry Organik",
+          type: "sayuran",
+          location: "Lembang, Jawa Barat",
+          region: "jawa-barat",
+          fundNeeded: 42000000,
+          fundCurrent: 16800000,
+          roi: 30,
+          duration: 4,
+          harvest: "Januari 2026",
+          risk: "medium",
+          status: "baru",
+          description:
+            "Budidaya tomat cherry organik dengan greenhouse dan sistem irigasi otomatis. Target pasar premium dan ekspor dengan sertifikasi organik.",
+          landIcon: "🍅",
+          profitShare: "65% Petani - 35% Investor",
+          area: "1.5 Ha",
+          method: "Greenhouse Organik",
+          timeline: [
+            {
+              phase: "Konstruksi Greenhouse",
+              date: "Agustus 2025",
+              status: "done",
+            },
+            { phase: "Pembibitan", date: "September 2025", status: "done" },
+            { phase: "Penanaman", date: "Oktober 2025", status: "progress" },
+            {
+              phase: "Perawatan Organik",
+              date: "Nov - Des 2025",
+              status: "pending",
+            },
+            {
+              phase: "Panen & Ekspor",
+              date: "Januari 2026",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Bu Ratna memiliki sertifikasi organik internasional dengan 4 proyek ekspor sukses.",
+        },
+        {
+          id: 6,
+          farmer: "Pak Joko Widodo",
+          farmerIcon: "👨‍🌾",
+          project: "Padi Sawah Tradisional",
+          type: "padi",
+          location: "Karawang, Jawa Barat",
+          region: "jawa-barat",
+          fundNeeded: 55000000,
+          fundCurrent: 33000000,
+          roi: 18,
+          duration: 4.5,
+          harvest: "Februari 2026",
+          risk: "low",
+          status: "baru",
+          description:
+            "Penanaman padi sawah dengan metode tradisional yang terbukti di lahan subur Karawang. Hasil panen dijamin oleh Bulog dengan harga stabil.",
+          landIcon: "🌾",
+          profitShare: "70% Petani - 30% Investor",
+          area: "4.0 Ha",
+          method: "Tradisional",
+          timeline: [
+            {
+              phase: "Pengolahan Sawah",
+              date: "September 2025",
+              status: "done",
+            },
+            { phase: "Penanaman", date: "Oktober 2025", status: "progress" },
+            { phase: "Pemupukan", date: "Nov - Des 2025", status: "pending" },
+            { phase: "Panen Raya", date: "Februari 2026", status: "pending" },
+            {
+              phase: "Penjualan ke Bulog",
+              date: "Februari 2026",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Pak Joko adalah petani generasi ketiga dengan pengalaman 20 tahun dan 15 proyek berhasil.",
+        },
+        {
+          id: 7,
+          farmer: "Bu Ani Susilowati",
+          farmerIcon: "👩‍🌾",
+          project: "Cabai Rawit Super Pedas",
+          type: "cabai",
+          location: "Brebes, Jawa Tengah",
+          region: "jawa-tengah",
+          fundNeeded: 38000000,
+          fundCurrent: 9500000,
+          roi: 26,
+          duration: 3.5,
+          harvest: "Desember 2025",
+          risk: "medium",
+          status: "baru",
+          description:
+            "Budidaya cabai rawit varietas super pedas dengan permintaan tinggi dari industri sambal dan bumbu. Sistem tanam dengan mulsa plastik untuk hasil maksimal.",
+          landIcon: "🌶️",
+          profitShare: "65% Petani - 35% Investor",
+          area: "1.8 Ha",
+          method: "Mulsa Plastik",
+          timeline: [
+            { phase: "Persiapan Lahan", date: "Agustus 2025", status: "done" },
+            { phase: "Pembibitan", date: "September 2025", status: "progress" },
+            { phase: "Penanaman", date: "Oktober 2025", status: "pending" },
+            { phase: "Perawatan", date: "Nov 2025", status: "pending" },
+            {
+              phase: "Panen & Distribusi",
+              date: "Desember 2025",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Bu Ani spesialis cabai dengan 7 proyek sukses dan koneksi kuat ke industri makanan.",
+        },
+        {
+          id: 8,
+          farmer: "Pak Hadi Purnomo",
+          farmerIcon: "👨‍🌾",
+          project: "Jagung Pipilan Kering",
+          type: "jagung",
+          location: "Blitar, Jawa Timur",
+          region: "jawa-timur",
+          fundNeeded: 52000000,
+          fundCurrent: 28600000,
+          roi: 21,
+          duration: 3.5,
+          harvest: "Desember 2025",
+          risk: "low",
+          status: "baru",
+          description:
+            "Penanaman jagung pipilan untuk pakan ternak dengan kontrak jangka panjang ke pabrik pakan. Lahan luas dan sistem mekanisasi modern.",
+          landIcon: "🌽",
+          profitShare: "70% Petani - 30% Investor",
+          area: "5.0 Ha",
+          method: "Mekanisasi Modern",
+          timeline: [
+            { phase: "Pengolahan Lahan", date: "Agustus 2025", status: "done" },
+            {
+              phase: "Penanaman Massal",
+              date: "September 2025",
+              status: "progress",
+            },
+            { phase: "Pemupukan", date: "Oktober 2025", status: "pending" },
+            {
+              phase: "Panen Mekanis",
+              date: "Desember 2025",
+              status: "pending",
+            },
+            {
+              phase: "Penjualan Kontrak",
+              date: "Desember 2025",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Pak Hadi memiliki alat pertanian modern dan 10 proyek dengan ROI stabil 20-22%.",
+        },
+        {
+          id: 9,
+          farmer: "Bu Rina Kusuma",
+          farmerIcon: "👩‍🌾",
+          project: "Strawberry Premium Dataran Tinggi",
+          type: "buah",
+          location: "Ciwidey, Jawa Barat",
+          region: "jawa-barat",
+          fundNeeded: 68000000,
+          fundCurrent: 10200000,
+          roi: 35,
+          duration: 5,
+          harvest: "Maret 2026",
+          risk: "high",
+          status: "baru",
+          description:
+            "Budidaya strawberry premium di dataran tinggi dengan teknologi greenhouse dan sistem irigasi presisi. Target pasar wisata agro dan retail premium.",
+          landIcon: "🍓",
+          profitShare: "60% Petani - 40% Investor",
+          area: "0.8 Ha",
+          method: "Greenhouse Dataran Tinggi",
+          timeline: [
+            {
+              phase: "Pembangunan Greenhouse",
+              date: "September 2025",
+              status: "progress",
+            },
+            {
+              phase: "Pembibitan Import",
+              date: "Oktober 2025",
+              status: "pending",
+            },
+            { phase: "Penanaman", date: "November 2025", status: "pending" },
+            {
+              phase: "Perawatan Intensif",
+              date: "Des 2025 - Feb 2026",
+              status: "pending",
+            },
+            {
+              phase: "Panen & Agrowisata",
+              date: "Maret 2026",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Bu Rina pionir strawberry di Ciwidey dengan 3 proyek sukses dan ROI tertinggi 38%.",
+        },
+        {
+          id: 10,
+          farmer: "Pak Dedi Hermawan",
+          farmerIcon: "👨‍🌾",
+          project: "Wortel Organik Dataran Tinggi",
+          type: "sayuran",
+          location: "Dieng, Jawa Tengah",
+          region: "jawa-tengah",
+          fundNeeded: 32000000,
+          fundCurrent: 25600000,
+          roi: 23,
+          duration: 3,
+          harvest: "November 2025",
+          risk: "low",
+          status: "hampir-penuh",
+          description:
+            "Budidaya wortel organik di dataran tinggi Dieng dengan iklim ideal. Produk bersertifikat organik dengan pasar retail modern yang sudah terjamin.",
+          landIcon: "🥕",
+          profitShare: "70% Petani - 30% Investor",
+          area: "2.2 Ha",
+          method: "Organik Bersertifikat",
+          timeline: [
+            {
+              phase: "Persiapan Lahan Organik",
+              date: "Juli 2025",
+              status: "done",
+            },
+            { phase: "Penanaman", date: "Agustus 2025", status: "done" },
+            {
+              phase: "Perawatan Organik",
+              date: "Sep - Okt 2025",
+              status: "progress",
+            },
+            { phase: "Panen", date: "November 2025", status: "pending" },
+            {
+              phase: "Distribusi Retail",
+              date: "November 2025",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Pak Dedi memiliki sertifikasi organik nasional dengan 9 proyek berhasil.",
+        },
+        {
+          id: 11,
+          farmer: "Bu Endang Lestari",
+          farmerIcon: "👩‍🌾",
+          project: "Bawang Merah Varietas Unggul",
+          type: "sayuran",
+          location: "Brebes, Jawa Tengah",
+          region: "jawa-tengah",
+          fundNeeded: 48000000,
+          fundCurrent: 19200000,
+          roi: 27,
+          duration: 3,
+          harvest: "November 2025",
+          risk: "medium",
+          status: "baru",
+          description:
+            "Penanaman bawang merah varietas Bima Brebes dengan produktivitas tinggi. Brebes sebagai sentra bawang merah nasional menjamin pasar yang kuat.",
+          landIcon: "🧅",
+          profitShare: "65% Petani - 35% Investor",
+          area: "2.5 Ha",
+          method: "Konvensional Intensif",
+          timeline: [
+            { phase: "Pengolahan Tanah", date: "Agustus 2025", status: "done" },
+            {
+              phase: "Penanaman Bibit",
+              date: "September 2025",
+              status: "progress",
+            },
+            {
+              phase: "Pemupukan & Penyiraman",
+              date: "Oktober 2025",
+              status: "pending",
+            },
+            { phase: "Panen", date: "November 2025", status: "pending" },
+            {
+              phase: "Pengeringan & Penjualan",
+              date: "November 2025",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Bu Endang adalah petani bawang berpengalaman 18 tahun dengan 11 proyek sukses.",
+        },
+        {
+          id: 12,
+          farmer: "Pak Bambang Sutrisno",
+          farmerIcon: "👨‍🌾",
+          project: "Melon Golden Premium",
+          type: "buah",
+          location: "Sragen, Jawa Tengah",
+          region: "jawa-tengah",
+          fundNeeded: 36000000,
+          fundCurrent: 14400000,
+          roi: 29,
+          duration: 3,
+          harvest: "November 2025",
+          risk: "medium",
+          status: "baru",
+          description:
+            "Budidaya melon golden premium dengan greenhouse dan sistem fertigasi. Target pasar hotel, restoran, dan supermarket premium dengan harga jual tinggi.",
+          landIcon: "🍈",
+          profitShare: "65% Petani - 35% Investor",
+          area: "1.0 Ha",
+          method: "Greenhouse Fertigasi",
+          timeline: [
+            { phase: "Setup Greenhouse", date: "Juli 2025", status: "done" },
+            { phase: "Pembibitan", date: "Agustus 2025", status: "done" },
+            {
+              phase: "Penanaman & Perawatan",
+              date: "Sep - Okt 2025",
+              status: "progress",
+            },
+            { phase: "Panen", date: "November 2025", status: "pending" },
+            {
+              phase: "Distribusi Premium",
+              date: "November 2025",
+              status: "pending",
+            },
+          ],
+          testimonial:
+            "Pak Bambang spesialis melon premium dengan 5 proyek sukses dan ROI rata-rata 28%.",
+        },
+      ];
+
+      let filteredProjects = [...projects];
+
+      function renderProjects() {
+        const grid = document.getElementById("projects-grid");
+        grid.innerHTML = "";
+
+        filteredProjects.forEach((project) => {
+          const fundProgress = (project.fundCurrent / project.fundNeeded) * 100;
+          const riskBadge =
+            project.risk === "low"
+              ? "badge-low"
+              : project.risk === "medium"
+              ? "badge-medium"
+              : "badge-high";
+          const riskText =
+            project.risk === "low"
+              ? "Risiko Rendah"
+              : project.risk === "medium"
+              ? "Risiko Sedang"
+              : "Risiko Tinggi";
+
+          const card = document.createElement("div");
+          card.className = "card project-card";
+          card.onclick = () => showDetail(project.id);
+          card.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #1B4332, #2D6A4F); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 3px solid white; box-shadow: 0 2px 8px rgba(27,67,50,0.2);">
+                                ${project.farmerIcon}
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm" style="color: #1B4332;">${
+                                  project.farmer
+                                }</p>
+                                <p class="text-xs" style="color: #6B7280;">📍 ${
+                                  project.location
+                                }</p>
+                            </div>
+                        </div>
+                        <span class="badge badge-verified">✓ Verified</span>
+                    </div>
+                    
+                    <div class="text-5xl mb-3 text-center">${
+                      project.landIcon
+                    }</div>
+                    
+                    <h4 class="font-bold text-base mb-3" style="color: #1B4332;">${
+                      project.project
+                    }</h4>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="flex items-center gap-2">
+                            <div class="stat-icon" style="background: #FFF7ED;">💰</div>
+                            <div>
+                                <p class="text-xs" style="color: #6B7280;">Dana Dibutuhkan</p>
+                                <p class="font-bold text-sm" style="color: #1B4332;">Rp ${(
+                                  project.fundNeeded / 1000000
+                                ).toFixed(0)} Jt</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="stat-icon" style="background: #D1FAE5;">📊</div>
+                            <div>
+                                <p class="text-xs" style="color: #6B7280;">Estimasi ROI</p>
+                                <p class="font-bold text-sm" style="color: #D4AF37;">${
+                                  project.roi
+                                }%</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="stat-icon" style="background: #DBEAFE;">⏱️</div>
+                            <div>
+                                <p class="text-xs" style="color: #6B7280;">Durasi</p>
+                                <p class="font-bold text-sm" style="color: #1B4332;">${
+                                  project.duration
+                                } Bulan</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="stat-icon" style="background: #FEF3C7;">🌾</div>
+                            <div>
+                                <p class="text-xs" style="color: #6B7280;">Panen</p>
+                                <p class="font-bold text-sm" style="color: #1B4332;">${
+                                  project.harvest
+                                }</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span style="color: #6B7280;">Progress Pendanaan</span>
+                            <span class="font-bold" style="color: #2D6A4F;">${fundProgress.toFixed(
+                              0
+                            )}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${fundProgress}%"></div>
+                        </div>
+                        <p class="text-xs mt-1" style="color: #6B7280;">Rp ${(
+                          project.fundCurrent / 1000000
+                        ).toFixed(1)} Jt dari Rp ${(
+            project.fundNeeded / 1000000
+          ).toFixed(0)} Jt</p>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="badge ${riskBadge}">${riskText}</span>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button class="btn-secondary flex-1" onclick="event.stopPropagation(); showDetail(${
+                          project.id
+                        })">
+                            📋 Lihat Detail
+                        </button>
+                        <button class="btn-gold flex-1" onclick="event.stopPropagation(); investNow(${
+                          project.id
+                        })">
+                            💎 Danai Sekarang
+                        </button>
+                    </div>
+                `;
+          grid.appendChild(card);
+        });
+
+        document.getElementById("project-count").textContent =
+          filteredProjects.length;
+      }
+
+      function showDetail(projectId) {
+        const project = projects.find((p) => p.id === projectId);
+        if (!project) return;
+
+        const fundProgress = (project.fundCurrent / project.fundNeeded) * 100;
+        const riskBadge =
+          project.risk === "low"
+            ? "badge-low"
+            : project.risk === "medium"
+            ? "badge-medium"
+            : "badge-high";
+        const riskText =
+          project.risk === "low"
+            ? "Risiko Rendah"
+            : project.risk === "medium"
+            ? "Risiko Sedang"
+            : "Risiko Tinggi";
+
+        const modalBody = document.getElementById("modal-body");
+        modalBody.innerHTML = `
+                <div style="background: linear-gradient(135deg, #1B4332, #2D6A4F); padding: 32px; border-radius: 20px 20px 0 0; position: relative;">
+                    <button onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                    
+                    <div class="flex items-start gap-4 mb-4">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 4px solid rgba(212,175,55,0.3);">
+                            ${project.farmerIcon}
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-3xl font-bold text-white mb-2">${
+                              project.project
+                            }</h2>
+                            <p class="text-lg" style="color: #D4AF37;">👨‍🌾 ${
+                              project.farmer
+                            }</p>
+                            <p class="text-sm text-white opacity-90">📍 ${
+                              project.location
+                            }</p>
+                        </div>
+                        <span class="badge badge-verified" style="background: white; color: #1E40AF;">✓ Terverifikasi</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-4 gap-4">
+                        <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 12px; backdrop-filter: blur(10px);">
+                            <p class="text-xs text-white opacity-80 mb-1">Dana Dibutuhkan</p>
+                            <p class="text-xl font-bold text-white">Rp ${(
+                              project.fundNeeded / 1000000
+                            ).toFixed(0)} Jt</p>
+                        </div>
+                        <div style="background: rgba(212,175,55,0.3); padding: 16px; border-radius: 12px; backdrop-filter: blur(10px);">
+                            <p class="text-xs text-white opacity-80 mb-1">Estimasi ROI</p>
+                            <p class="text-xl font-bold" style="color: #D4AF37;">${
+                              project.roi
+                            }%</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 12px; backdrop-filter: blur(10px);">
+                            <p class="text-xs text-white opacity-80 mb-1">Durasi</p>
+                            <p class="text-xl font-bold text-white">${
+                              project.duration
+                            } Bulan</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 12px; backdrop-filter: blur(10px);">
+                            <p class="text-xs text-white opacity-80 mb-1">Luas Lahan</p>
+                            <p class="text-xl font-bold text-white">${
+                              project.area
+                            }</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="padding: 32px;">
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span style="color: #6B7280;">Progress Pendanaan</span>
+                            <span class="font-bold" style="color: #2D6A4F;">${fundProgress.toFixed(
+                              0
+                            )}% Terdanai</span>
+                        </div>
+                        <div class="progress-bar" style="height: 12px;">
+                            <div class="progress-fill" style="width: ${fundProgress}%"></div>
+                        </div>
+                        <p class="text-sm mt-2" style="color: #6B7280;">Rp ${(
+                          project.fundCurrent / 1000000
+                        ).toFixed(1)} Jt dari Rp ${(
+          project.fundNeeded / 1000000
+        ).toFixed(0)} Jt</p>
+                    </div>
+                    
+                    <div class="land-photo">${project.landIcon}</div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h3 class="font-bold text-lg mb-3" style="color: #1B4332;">📝 Deskripsi Proyek</h3>
+                            <p class="text-sm mb-4" style="color: #4B5563; line-height: 1.7;">${
+                              project.description
+                            }</p>
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3 p-3 rounded-lg" style="background: #F0FDF4;">
+                                    <span class="text-2xl">🌱</span>
+                                    <div>
+                                        <p class="text-xs" style="color: #6B7280;">Metode Tanam</p>
+                                        <p class="font-bold text-sm" style="color: #1B4332;">${
+                                          project.method
+                                        }</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 rounded-lg" style="background: #FFF7ED;">
+                                    <span class="text-2xl">💰</span>
+                                    <div>
+                                        <p class="text-xs" style="color: #6B7280;">Pembagian Hasil</p>
+                                        <p class="font-bold text-sm" style="color: #1B4332;">${
+                                          project.profitShare
+                                        }</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 rounded-lg" style="background: #FEE2E2;">
+                                    <span class="text-2xl">⚠️</span>
+                                    <div>
+                                        <p class="text-xs" style="color: #6B7280;">Tingkat Risiko</p>
+                                        <span class="badge ${riskBadge}">${riskText}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 rounded-lg" style="background: #DBEAFE;">
+                                    <span class="text-2xl">📅</span>
+                                    <div>
+                                        <p class="text-xs" style="color: #6B7280;">Estimasi Panen</p>
+                                        <p class="font-bold text-sm" style="color: #1B4332;">${
+                                          project.harvest
+                                        }</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-bold text-lg mb-3" style="color: #1B4332;">📅 Timeline Kegiatan</h3>
+                            <div class="space-y-0">
+                                ${project.timeline
+                                  .map(
+                                    (item) => `
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot" style="background: ${
+                                          item.status === "done"
+                                            ? "#2D6A4F"
+                                            : item.status === "progress"
+                                            ? "#D4AF37"
+                                            : "#E5E7EB"
+                                        }"></div>
+                                        <div>
+                                            <p class="font-semibold text-sm" style="color: #1B4332;">${
+                                              item.phase
+                                            }</p>
+                                            <p class="text-xs" style="color: #6B7280;">${
+                                              item.date
+                                            }</p>
+                                            ${
+                                              item.status === "done"
+                                                ? '<span class="text-xs" style="color: #2D6A4F;">✓ Selesai</span>'
+                                                : item.status === "progress"
+                                                ? '<span class="text-xs" style="color: #D4AF37;">⏳ Sedang Berjalan</span>'
+                                                : '<span class="text-xs" style="color: #9CA3AF;">○ Belum Dimulai</span>'
+                                            }
+                                        </div>
+                                    </div>
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #F0FDF4, #D1FAE5); padding: 24px; border-radius: 16px; border-left: 4px solid #2D6A4F;" class="mb-6">
+                        <h3 class="font-bold text-lg mb-2" style="color: #1B4332;">⭐ Testimoni & Track Record</h3>
+                        <p class="text-sm" style="color: #065F46; line-height: 1.7;">${
+                          project.testimonial
+                        }</p>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <button class="btn-secondary flex-1" onclick="closeModal()">
+                            ← Kembali
+                        </button>
+                        <button class="btn-gold flex-1" onclick="investNow(${
+                          project.id
+                        })">
+                            💎 Investasikan Dana Sekarang
+                        </button>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById("detail-modal").classList.add("active");
+      }
+
+      function closeModal() {
+        document.getElementById("detail-modal").classList.remove("active");
+      }
+
+      function investNow(projectId) {
+        const project = projects.find((p) => p.id === projectId);
+        const fundNeeded = project.fundNeeded - project.fundCurrent;
+
+        const modalBody = document.getElementById("modal-body");
+        modalBody.innerHTML = `
+                <div style="background: linear-gradient(135deg, #D4AF37, #B8941F); padding: 32px; border-radius: 20px 20px 0 0; position: relative;">
+                    <button onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; background: rgba(27,67,50,0.3); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                    
+                    <div class="text-center">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 16px;">
+                            💎
+                        </div>
+                        <h2 class="text-3xl font-bold mb-2" style="color: #1B4332;">Investasi Proyek</h2>
+                        <p class="text-lg" style="color: #1B4332; opacity: 0.8;">${
+                          project.project
+                        }</p>
+                    </div>
+                </div>
+                
+                <div style="padding: 32px;">
+                    <div style="background: #F0FDF4; padding: 24px; border-radius: 16px; border: 2px solid #2D6A4F; margin-bottom: 24px;">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-xs mb-1" style="color: #6B7280;">Dana Masih Dibutuhkan</p>
+                                <p class="text-2xl font-bold" style="color: #1B4332;">Rp ${(
+                                  fundNeeded / 1000000
+                                ).toFixed(1)} Jt</p>
+                            </div>
+                            <div>
+                                <p class="text-xs mb-1" style="color: #6B7280;">Estimasi ROI</p>
+                                <p class="text-2xl font-bold" style="color: #D4AF37;">${
+                                  project.roi
+                                }%</p>
+                            </div>
+                        </div>
+                        <p class="text-xs" style="color: #065F46;">💡 Investasi minimum: Rp 1.000.000</p>
+                    </div>
+                    
+                    <form onsubmit="confirmInvestment(event, ${project.id})">
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold mb-2" style="color: #1B4332;">Jumlah Investasi (Rp)</label>
+                            <input type="number" id="invest-amount" min="1000000" step="100000" required class="w-full px-4 py-3 border-2 rounded-lg text-lg font-bold" style="border-color: #D4AF37; color: #1B4332;" placeholder="Masukkan jumlah investasi">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold mb-2" style="color: #1B4332;">Metode Pembayaran</label>
+                            <select class="w-full px-4 py-3 border-2 rounded-lg" style="border-color: #E5E7EB; color: #1B4332;" required>
+                                <option value="">Pilih metode pembayaran</option>
+                                <option value="transfer">Transfer Bank</option>
+                                <option value="ewallet">E-Wallet</option>
+                                <option value="va">Virtual Account</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" required style="width: 20px; height: 20px; margin-top: 2px; accent-color: #2D6A4F;">
+                                <span class="text-xs" style="color: #6B7280;">Saya telah membaca dan menyetujui syarat & ketentuan investasi, serta memahami risiko yang terkait dengan proyek pertanian ini.</span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex gap-4">
+                            <button type="button" class="btn-secondary flex-1" onclick="showDetail(${
+                              project.id
+                            })">
+                                ← Kembali
+                            </button>
+                            <button type="submit" class="btn-primary flex-1">
+                                ✓ Konfirmasi Investasi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+        document.getElementById("detail-modal").classList.add("active");
+      }
+
+      function confirmInvestment(event, projectId) {
+        event.preventDefault();
+        const amount = document.getElementById("invest-amount").value;
+        const project = projects.find((p) => p.id === projectId);
+
+        const modalBody = document.getElementById("modal-body");
+        modalBody.innerHTML = `
+                <div style="padding: 60px 32px; text-align: center;">
+                    <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #D1FAE5, #A7F3D0); display: flex; align-items: center; justify-content: center; font-size: 64px; margin: 0 auto 24px; box-shadow: 0 8px 32px rgba(45,106,79,0.3);">
+                        ✓
+                    </div>
+                    <h2 class="text-3xl font-bold mb-4" style="color: #1B4332;">Investasi Berhasil!</h2>
+                    <p class="text-lg mb-6" style="color: #6B7280;">Terima kasih telah berinvestasi di proyek <strong>${
+                      project.project
+                    }</strong></p>
+                    
+                    <div style="background: #F0FDF4; padding: 24px; border-radius: 16px; margin-bottom: 24px; border: 2px solid #2D6A4F;">
+                        <p class="text-sm mb-2" style="color: #6B7280;">Jumlah Investasi</p>
+                        <p class="text-3xl font-bold mb-4" style="color: #1B4332;">Rp ${parseInt(
+                          amount
+                        ).toLocaleString("id-ID")}</p>
+                        <p class="text-sm" style="color: #065F46;">Estimasi return: <strong style="color: #D4AF37;">Rp ${(
+                          parseInt(amount) *
+                          (1 + project.roi / 100)
+                        ).toLocaleString("id-ID")}</strong></p>
+                    </div>
+                    
+                    <div style="background: #FFF7ED; padding: 20px; border-radius: 12px; margin-bottom: 24px;">
+                        <p class="text-sm" style="color: #92400E;">📧 Konfirmasi investasi telah dikirim ke email Anda. Tim kami akan menghubungi Anda dalam 1x24 jam untuk proses selanjutnya.</p>
+                    </div>
+                    
+                    <button class="btn-primary w-full" onclick="closeModal(); location.reload();">
+                        Kembali ke Daftar Proyek
+                    </button>
+                </div>
+            `;
+      }
+
+      function sortProjects(type) {
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        event.target.classList.add("active");
+
+        switch (type) {
+          case "roi":
+            filteredProjects.sort((a, b) => b.roi - a.roi);
+            break;
+          case "risk":
+            const riskOrder = { low: 1, medium: 2, high: 3 };
+            filteredProjects.sort(
+              (a, b) => riskOrder[a.risk] - riskOrder[b.risk]
+            );
+            break;
+          case "duration":
+            filteredProjects.sort((a, b) => a.duration - b.duration);
+            break;
+          case "funding":
+            filteredProjects.sort(
+              (a, b) =>
+                b.fundNeeded - b.fundCurrent - (a.fundNeeded - a.fundCurrent)
+            );
+            break;
+        }
+        renderProjects();
+      }
+
+      function resetFilters() {
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        document
+          .querySelectorAll('input[type="checkbox"]')
+          .forEach((cb) => (cb.checked = false));
+        document.getElementById("search-input").value = "";
+        filteredProjects = [...projects];
+        renderProjects();
+      }
+
+      function applyFilters() {
+        const searchTerm = document
+          .getElementById("search-input")
+          .value.toLowerCase();
+
+        const selectedTypes = Array.from(
+          document.querySelectorAll(
+            'input[value="padi"], input[value="cabai"], input[value="jagung"], input[value="sayuran"], input[value="buah"]'
+          )
+        )
+          .filter((cb) => cb.checked)
+          .map((cb) => cb.value);
+
+        const selectedRegions = Array.from(
+          document.querySelectorAll(
+            'input[value="jawa-barat"], input[value="jawa-tengah"], input[value="jawa-timur"]'
+          )
+        )
+          .filter((cb) => cb.checked)
+          .map((cb) => cb.value);
+
+        const selectedStatus = Array.from(
+          document.querySelectorAll(
+            'input[value="baru"], input[value="hampir-penuh"]'
+          )
+        )
+          .filter((cb) => cb.checked)
+          .map((cb) => cb.value);
+
+        const selectedBudget = Array.from(
+          document.querySelectorAll(
+            'input[value="0-5"], input[value="5-10"], input[value="10-50"], input[value="50+"]'
+          )
+        )
+          .filter((cb) => cb.checked)
+          .map((cb) => cb.value);
+
+        filteredProjects = projects.filter((project) => {
+          const matchSearch =
+            !searchTerm ||
+            project.farmer.toLowerCase().includes(searchTerm) ||
+            project.project.toLowerCase().includes(searchTerm) ||
+            project.location.toLowerCase().includes(searchTerm) ||
+            project.type.toLowerCase().includes(searchTerm);
+
+          const matchType =
+            selectedTypes.length === 0 || selectedTypes.includes(project.type);
+          const matchRegion =
+            selectedRegions.length === 0 ||
+            selectedRegions.includes(project.region);
+          const matchStatus =
+            selectedStatus.length === 0 ||
+            selectedStatus.includes(project.status);
+
+          let matchBudget = selectedBudget.length === 0;
+          if (!matchBudget) {
+            const fundInMillion = project.fundNeeded / 1000000;
+            matchBudget = selectedBudget.some((range) => {
+              if (range === "0-5") return fundInMillion < 5;
+              if (range === "5-10")
+                return fundInMillion >= 5 && fundInMillion <= 10;
+              if (range === "10-50")
+                return fundInMillion > 10 && fundInMillion <= 50;
+              if (range === "50+") return fundInMillion > 50;
+              return false;
+            });
+          }
+
+          return (
+            matchSearch &&
+            matchType &&
+            matchRegion &&
+            matchStatus &&
+            matchBudget
+          );
+        });
+
+        renderProjects();
+      }
+
+      document
+        .getElementById("search-input")
+        .addEventListener("input", applyFilters);
+
+      document
+        .getElementById("detail-modal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closeModal();
+          }
+        });
+
+      renderProjects();
+    </script>
+    <script>
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'99be0b61d394fd07',t:'MTc2MjY5OTAwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
+        }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

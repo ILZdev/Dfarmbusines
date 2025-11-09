@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Petani</title>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        box-sizing: border-box;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .dashboard-container {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .main-content {
+        height: 100%;
+        overflow-y: auto;
+      }
+
+      .sidebar {
+        height: 100%;
+        overflow-y: auto;
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+
+      .menu-item {
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+
+      .menu-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .menu-item.active {
+        background: rgba(255, 255, 255, 0.15);
+        border-left: 4px solid #f5e6d3;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #2f5233, #4a7c4e);
+        transition: width 0.3s;
+      }
+
+      .weather-icon {
+        font-size: 32px;
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #ef4444;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: bold;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #2f5233 0%, #4a7c4e 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 200px;
+      }
+
+      .land-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .status-active {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .status-harvest {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .status-rest {
+        background: #e5e7eb;
+        color: #374151;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          left: -100%;
+          transition: left 0.3s;
+          z-index: 50;
+        }
+
+        .sidebar.open {
+          left: 0;
+        }
+      }
+    </style>
+    <style>
+      @view-transition {
+        navigation: auto;
+      }
+    </style>
+    <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div class="dashboard-container flex" style="background: #f5e6d3">
+      <!-- Sidebar -->
+      <div class="sidebar w-64 flex-shrink-0" style="background: #2f5233">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-8">
+            <div
+              class="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+              style="background: #4a7c4e"
+            >
+              🌾
+            </div>
+            <div>
+              <h1 class="text-white font-bold text-lg">AgriConnect</h1>
+              <p class="text-xs" style="color: #f5e6d3">Platform Pertanian</p>
+            </div>
+          </div>
+          <nav class="space-y-2">
+            <div
+              class="menu-item active flex items-center gap-3 px-4 py-3 rounded-lg text-white"
+              onclick="showPage('overview')"
+            >
+              <span class="text-xl">📊</span>
+              <span class="font-medium">Ringkasan</span>
+            </div>
+            <div
+              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
+              onclick="showPage('lahan')"
+            >
+              <span class="text-xl">🌱</span>
+              <span class="font-medium">Ringkasan Lahan</span>
+            </div>
+            <div
+              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
+              onclick="showPage('pengajuan')"
+            >
+              <span class="text-xl">💰</span>
+              <span class="font-medium">Pengajuan Dana</span>
+            </div>
+            <div
+              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
+              onclick="showPage('aktivitas')"
+            >
+              <span class="text-xl">📅</span>
+              <span class="font-medium">Aktivitas Harian</span>
+            </div>
+            <div
+              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
+              onclick="showPage('keuangan')"
+            >
+              <span class="text-xl">📈</span>
+              <span class="font-medium">Keuangan &amp; Laporan</span>
+            </div>
+            <div
+              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
+              onclick="showPage('komunikasi')"
+            >
+              <span class="text-xl">💬</span>
+              <span class="font-medium">Komunikasi</span>
+            </div>
+            <div
+              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
+              onclick="showPage('bantuan')"
+            >
+              <span class="text-xl">📚</span>
+              <span class="font-medium">Bantuan &amp; Edukasi</span>
+            </div>
+          </nav>
+        </div>
+      </div>
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col min-w-0">
+        <!-- Header -->
+        <header
+          class="bg-white shadow-sm px-6 py-4 flex items-center justify-between flex-shrink-0"
+        >
+          <div>
+            <h2
+              class="text-2xl font-bold"
+              style="color: #2f5233"
+              id="farmer-name"
+            >
+              Bapak Suryanto
+            </h2>
+            <p class="text-sm" style="color: #6b7280" id="season-info">
+              Musim Tanam 2024 - Padi Organik
+            </p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="relative cursor-pointer">
+              <span class="text-2xl">🔔</span>
+              <div class="notification-badge">3</div>
+            </div>
+            <div
+              class="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+              style="background: #2f5233; color: white"
+            >
+              👨‍🌾
+            </div>
+          </div>
+        </header>
+        <!-- Page Content -->
+        <div class="main-content flex-1 p-6">
+          <!-- Overview Page -->
+          <div id="page-overview" class="page-content">
+            <h3
+              class="text-xl font-bold mb-6"
+              style="color: #2f5233"
+              id="welcome-message"
+            >
+              Selamat Datang di Dashboard Anda
+            </h3>
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div class="stat-card">
+                <div class="relative z-10">
+                  <p class="text-sm opacity-90 mb-1">Lahan Aktif</p>
+                  <p class="text-3xl font-bold">5</p>
+                  <p class="text-xs opacity-75 mt-2">
+                    ↑ 1 lahan baru bulan ini
+                  </p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="relative z-10">
+                  <p class="text-sm opacity-90 mb-1">Total Dukungan Dana</p>
+                  <p class="text-3xl font-bold">Rp 125 Jt</p>
+                  <p class="text-xs opacity-75 mt-2">Dari 12 investor</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="relative z-10">
+                  <p class="text-sm opacity-90 mb-1">Estimasi Panen</p>
+                  <p class="text-3xl font-bold">8.5 Ton</p>
+                  <p class="text-xs opacity-75 mt-2">Dalam 45 hari</p>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Progress Tanaman -->
+              <div class="lg:col-span-2">
+                <div class="card">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Perkembangan Tanaman
+                  </h4>
+                  <div class="space-y-4">
+                    <div>
+                      <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium"
+                          >Lahan A - Padi Organik</span
+                        >
+                        <span class="text-sm font-bold" style="color: #2f5233"
+                          >75%</span
+                        >
+                      </div>
+                      <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                      </div>
+                      <p class="text-xs mt-1" style="color: #6b7280">
+                        Fase: Pembungaan
+                      </p>
+                    </div>
+                    <div>
+                      <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium"
+                          >Lahan B - Jagung Manis</span
+                        >
+                        <span class="text-sm font-bold" style="color: #2f5233"
+                          >60%</span
+                        >
+                      </div>
+                      <div class="progress-bar">
+                        <div class="progress-fill" style="width: 60%"></div>
+                      </div>
+                      <p class="text-xs mt-1" style="color: #6b7280">
+                        Fase: Pertumbuhan
+                      </p>
+                    </div>
+                    <div>
+                      <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium"
+                          >Lahan C - Cabai Merah</span
+                        >
+                        <span class="text-sm font-bold" style="color: #2f5233"
+                          >90%</span
+                        >
+                      </div>
+                      <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%"></div>
+                      </div>
+                      <p class="text-xs mt-1" style="color: #6b7280">
+                        Fase: Siap Panen
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Notifikasi -->
+                <div class="card mt-6">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Notifikasi Penting
+                  </h4>
+                  <div class="space-y-3">
+                    <div
+                      class="flex items-start gap-3 p-3 rounded-lg"
+                      style="background: #d1fae5"
+                    >
+                      <span class="text-xl">✅</span>
+                      <div class="flex-1">
+                        <p class="font-medium text-sm" style="color: #065f46">
+                          Dana Proyek Diterima
+                        </p>
+                        <p class="text-xs" style="color: #047857">
+                          Rp 25.000.000 telah masuk ke rekening Anda
+                        </p>
+                        <p class="text-xs mt-1" style="color: #6b7280">
+                          2 jam yang lalu
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-start gap-3 p-3 rounded-lg"
+                      style="background: #fef3c7"
+                    >
+                      <span class="text-xl">⏰</span>
+                      <div class="flex-1">
+                        <p class="font-medium text-sm" style="color: #92400e">
+                          Panen Minggu Depan
+                        </p>
+                        <p class="text-xs" style="color: #b45309">
+                          Lahan C - Cabai Merah siap dipanen dalam 7 hari
+                        </p>
+                        <p class="text-xs mt-1" style="color: #6b7280">
+                          Hari ini
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-start gap-3 p-3 rounded-lg"
+                      style="background: #dbeafe"
+                    >
+                      <span class="text-xl">💬</span>
+                      <div class="flex-1">
+                        <p class="font-medium text-sm" style="color: #1e40af">
+                          Pesan Baru dari Investor
+                        </p>
+                        <p class="text-xs" style="color: #1d4ed8">
+                          Pak Budi ingin melihat update foto tanaman
+                        </p>
+                        <p class="text-xs mt-1" style="color: #6b7280">
+                          5 jam yang lalu
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Cuaca -->
+              <div class="lg:col-span-1">
+                <div class="card">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Cuaca Hari Ini
+                  </h4>
+                  <div class="text-center mb-4">
+                    <div class="weather-icon mb-2">☀️</div>
+                    <p class="text-4xl font-bold" style="color: #2f5233">
+                      32°C
+                    </p>
+                    <p class="text-sm" style="color: #6b7280">Cerah Berawan</p>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p style="color: #6b7280">Kelembaban</p>
+                      <p class="font-bold" style="color: #2f5233">65%</p>
+                    </div>
+                    <div>
+                      <p style="color: #6b7280">Angin</p>
+                      <p class="font-bold" style="color: #2f5233">12 km/h</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mt-6">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Prakiraan 7 Hari
+                  </h4>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm">Senin</span>
+                      <span class="text-xl">⛅</span>
+                      <span class="text-sm font-bold" style="color: #2f5233"
+                        >31°C</span
+                      >
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm">Selasa</span>
+                      <span class="text-xl">🌧️</span>
+                      <span class="text-sm font-bold" style="color: #2f5233"
+                        >28°C</span
+                      >
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm">Rabu</span>
+                      <span class="text-xl">🌧️</span>
+                      <span class="text-sm font-bold" style="color: #2f5233"
+                        >27°C</span
+                      >
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm">Kamis</span>
+                      <span class="text-xl">⛅</span>
+                      <span class="text-sm font-bold" style="color: #2f5233"
+                        >30°C</span
+                      >
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm">Jumat</span>
+                      <span class="text-xl">☀️</span>
+                      <span class="text-sm font-bold" style="color: #2f5233"
+                        >32°C</span
+                      >
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm">Sabtu</span>
+                      <span class="text-xl">☀️</span>
+                      <span class="text-sm font-bold" style="color: #2f5233"
+                        >33°C</span
+                      >
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm">Minggu</span>
+                      <span class="text-xl">⛅</span>
+                      <span class="text-sm font-bold" style="color: #2f5233"
+                        >31°C</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Lahan Page -->
+          <div id="page-lahan" class="page-content hidden">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-bold" style="color: #2f5233">
+                Ringkasan Lahan
+              </h3>
+              <button
+                onclick="showAddLandForm()"
+                class="px-4 py-2 rounded-lg text-white font-medium"
+                style="background: #2f5233"
+              >
+                + Tambah Lahan Baru
+              </button>
+            </div>
+            <div
+              id="land-list"
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <div class="card">
+                <div class="flex justify-between items-start mb-3">
+                  <h4 class="font-bold" style="color: #2f5233">Lahan A</h4>
+                  <span class="land-status status-active">Ditanam</span>
+                </div>
+                <div class="text-4xl mb-3">🌾</div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Luas</span>
+                    <span class="font-medium">2.5 Ha</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Tanaman</span>
+                    <span class="font-medium">Padi Organik</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Progress</span>
+                    <span class="font-medium">75%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="flex justify-between items-start mb-3">
+                  <h4 class="font-bold" style="color: #2f5233">Lahan B</h4>
+                  <span class="land-status status-active">Ditanam</span>
+                </div>
+                <div class="text-4xl mb-3">🌽</div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Luas</span>
+                    <span class="font-medium">1.8 Ha</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Tanaman</span>
+                    <span class="font-medium">Jagung Manis</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Progress</span>
+                    <span class="font-medium">60%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="flex justify-between items-start mb-3">
+                  <h4 class="font-bold" style="color: #2f5233">Lahan C</h4>
+                  <span class="land-status status-harvest">Panen</span>
+                </div>
+                <div class="text-4xl mb-3">🌶️</div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Luas</span>
+                    <span class="font-medium">1.2 Ha</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Tanaman</span>
+                    <span class="font-medium">Cabai Merah</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Progress</span>
+                    <span class="font-medium">90%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="flex justify-between items-start mb-3">
+                  <h4 class="font-bold" style="color: #2f5233">Lahan D</h4>
+                  <span class="land-status status-rest">Istirahat</span>
+                </div>
+                <div class="text-4xl mb-3">🌱</div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Luas</span>
+                    <span class="font-medium">2.0 Ha</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Tanaman</span>
+                    <span class="font-medium">-</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Progress</span>
+                    <span class="font-medium">-</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="flex justify-between items-start mb-3">
+                  <h4 class="font-bold" style="color: #2f5233">Lahan E</h4>
+                  <span class="land-status status-active">Ditanam</span>
+                </div>
+                <div class="text-4xl mb-3">🥬</div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Luas</span>
+                    <span class="font-medium">0.8 Ha</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Tanaman</span>
+                    <span class="font-medium">Sayuran Hijau</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span style="color: #6b7280">Progress</span>
+                    <span class="font-medium">45%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Add Land Form (Hidden by default) -->
+            <div id="add-land-form" class="hidden mt-6">
+              <div class="card max-w-2xl">
+                <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                  Tambah Lahan Baru
+                </h4>
+                <form onsubmit="handleAddLand(event)" class="space-y-4">
+                  <div>
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      style="color: #2f5233"
+                      >Nama Lahan</label
+                    >
+                    <input
+                      type="text"
+                      required
+                      class="w-full px-4 py-2 border rounded-lg"
+                      style="border-color: #d1d5db"
+                      placeholder="Contoh: Lahan F"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      style="color: #2f5233"
+                      >Luas (Hektar)</label
+                    >
+                    <input
+                      type="number"
+                      step="0.1"
+                      required
+                      class="w-full px-4 py-2 border rounded-lg"
+                      style="border-color: #d1d5db"
+                      placeholder="Contoh: 1.5"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      style="color: #2f5233"
+                      >Jenis Tanaman</label
+                    >
+                    <input
+                      type="text"
+                      required
+                      class="w-full px-4 py-2 border rounded-lg"
+                      style="border-color: #d1d5db"
+                      placeholder="Contoh: Tomat"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      style="color: #2f5233"
+                      >Foto Lahan</label
+                    >
+                    <div
+                      class="border-2 border-dashed rounded-lg p-8 text-center"
+                      style="border-color: #d1d5db"
+                    >
+                      <span class="text-4xl">📷</span>
+                      <p class="text-sm mt-2" style="color: #6b7280">
+                        Klik untuk upload foto
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex gap-3">
+                    <button
+                      type="submit"
+                      class="px-6 py-2 rounded-lg text-white font-medium"
+                      style="background: #2f5233"
+                    >
+                      Simpan
+                    </button>
+                    <button
+                      type="button"
+                      onclick="hideAddLandForm()"
+                      class="px-6 py-2 rounded-lg font-medium"
+                      style="background: #e5e7eb; color: #374151"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- Aktivitas Page -->
+          <div id="page-aktivitas" class="page-content hidden">
+            <h3 class="text-xl font-bold mb-6" style="color: #2f5233">
+              Aktivitas Harian
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="lg:col-span-2">
+                <div class="card">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Kalender Aktivitas
+                  </h4>
+                  <div class="grid grid-cols-7 gap-2 mb-4">
+                    <div
+                      class="text-center text-sm font-medium"
+                      style="color: #6b7280"
+                    >
+                      Min
+                    </div>
+                    <div
+                      class="text-center text-sm font-medium"
+                      style="color: #6b7280"
+                    >
+                      Sen
+                    </div>
+                    <div
+                      class="text-center text-sm font-medium"
+                      style="color: #6b7280"
+                    >
+                      Sel
+                    </div>
+                    <div
+                      class="text-center text-sm font-medium"
+                      style="color: #6b7280"
+                    >
+                      Rab
+                    </div>
+                    <div
+                      class="text-center text-sm font-medium"
+                      style="color: #6b7280"
+                    >
+                      Kam
+                    </div>
+                    <div
+                      class="text-center text-sm font-medium"
+                      style="color: #6b7280"
+                    >
+                      Jum
+                    </div>
+                    <div
+                      class="text-center text-sm font-medium"
+                      style="color: #6b7280"
+                    >
+                      Sab
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-7 gap-2">
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      1
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      2
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      3
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #d1fae5;
+                        color: #065f46;
+                        font-weight: 600;
+                      "
+                    >
+                      4
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      5
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #fef3c7;
+                        color: #92400e;
+                        font-weight: 600;
+                      "
+                    >
+                      6
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      7
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #d1fae5;
+                        color: #065f46;
+                        font-weight: 600;
+                      "
+                    >
+                      8
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      9
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      10
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #d1fae5;
+                        color: #065f46;
+                        font-weight: 600;
+                      "
+                    >
+                      11
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #fef3c7;
+                        color: #92400e;
+                        font-weight: 600;
+                      "
+                    >
+                      12
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      13
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      14
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded font-bold"
+                      style="background: #2f5233; color: white"
+                    >
+                      15
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      16
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      17
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #d1fae5;
+                        color: #065f46;
+                        font-weight: 600;
+                      "
+                    >
+                      18
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      19
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #fef3c7;
+                        color: #92400e;
+                        font-weight: 600;
+                      "
+                    >
+                      20
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      21
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      22
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #d1fae5;
+                        color: #065f46;
+                        font-weight: 600;
+                      "
+                    >
+                      23
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      24
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      25
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #fef3c7;
+                        color: #92400e;
+                        font-weight: 600;
+                      "
+                    >
+                      26
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      27
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      28
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="background: #f3f4f6"
+                    >
+                      29
+                    </div>
+                    <div
+                      class="aspect-square flex items-center justify-center text-sm rounded"
+                      style="
+                        background: #d1fae5;
+                        color: #065f46;
+                        font-weight: 600;
+                      "
+                    >
+                      30
+                    </div>
+                  </div>
+                  <div class="flex gap-4 mt-4 text-xs">
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="w-4 h-4 rounded"
+                        style="background: #d1fae5"
+                      ></div>
+                      <span>Penyiraman</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="w-4 h-4 rounded"
+                        style="background: #fef3c7"
+                      ></div>
+                      <span>Pemupukan</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-1">
+                <div class="card">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Checklist Hari Ini
+                  </h4>
+                  <div class="space-y-3">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked
+                        class="w-5 h-5 rounded"
+                        style="accent-color: #2f5233"
+                      />
+                      <span class="text-sm">Penyiraman Lahan A</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked
+                        class="w-5 h-5 rounded"
+                        style="accent-color: #2f5233"
+                      />
+                      <span class="text-sm">Cek hama Lahan B</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        class="w-5 h-5 rounded"
+                        style="accent-color: #2f5233"
+                      />
+                      <span class="text-sm">Pemupukan Lahan C</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        class="w-5 h-5 rounded"
+                        style="accent-color: #2f5233"
+                      />
+                      <span class="text-sm">Upload foto progress</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="card mt-6">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Reminder
+                  </h4>
+                  <div class="space-y-3">
+                    <div
+                      class="flex items-start gap-3 p-3 rounded-lg"
+                      style="background: #fef3c7"
+                    >
+                      <span class="text-xl">⏰</span>
+                      <div>
+                        <p class="font-medium text-sm" style="color: #92400e">
+                          Besok
+                        </p>
+                        <p class="text-xs" style="color: #b45309">
+                          Pemupukan Lahan A &amp; B
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-start gap-3 p-3 rounded-lg"
+                      style="background: #dbeafe"
+                    >
+                      <span class="text-xl">📅</span>
+                      <div>
+                        <p class="font-medium text-sm" style="color: #1e40af">
+                          3 Hari Lagi
+                        </p>
+                        <p class="text-xs" style="color: #1d4ed8">
+                          Laporan mingguan ke investor
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Keuangan Page -->
+          <div id="page-keuangan" class="page-content hidden">
+            <h3 class="text-xl font-bold mb-6" style="color: #2f5233">
+              Keuangan &amp; Laporan
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div class="card">
+                <p class="text-sm mb-2" style="color: #6b7280">
+                  Total Biaya Operasional
+                </p>
+                <p class="text-2xl font-bold" style="color: #ef4444">
+                  Rp 85.500.000
+                </p>
+                <p class="text-xs mt-1" style="color: #6b7280">Musim ini</p>
+              </div>
+              <div class="card">
+                <p class="text-sm mb-2" style="color: #6b7280">
+                  Pemasukan Panen
+                </p>
+                <p class="text-2xl font-bold" style="color: #10b981">
+                  Rp 142.000.000
+                </p>
+                <p class="text-xs mt-1" style="color: #6b7280">Musim ini</p>
+              </div>
+              <div class="card">
+                <p class="text-sm mb-2" style="color: #6b7280">
+                  Keuntungan Bersih
+                </p>
+                <p class="text-2xl font-bold" style="color: #2f5233">
+                  Rp 56.500.000
+                </p>
+                <p class="text-xs mt-1" style="color: #6b7280">
+                  ↑ 18% dari musim lalu
+                </p>
+              </div>
+            </div>
+            <div class="card mb-6">
+              <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                Grafik Keuntungan per Musim
+              </h4>
+              <div
+                class="chart-container flex items-end justify-around gap-4 px-4"
+              >
+                <div class="flex flex-col items-center gap-2">
+                  <div
+                    class="w-16 rounded-t-lg"
+                    style="background: #2f5233; height: 60%"
+                  ></div>
+                  <span class="text-xs" style="color: #6b7280">Q1</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                  <div
+                    class="w-16 rounded-t-lg"
+                    style="background: #2f5233; height: 75%"
+                  ></div>
+                  <span class="text-xs" style="color: #6b7280">Q2</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                  <div
+                    class="w-16 rounded-t-lg"
+                    style="background: #2f5233; height: 85%"
+                  ></div>
+                  <span class="text-xs" style="color: #6b7280">Q3</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                  <div
+                    class="w-16 rounded-t-lg"
+                    style="background: #4a7c4e; height: 100%"
+                  ></div>
+                  <span class="text-xs font-bold" style="color: #2f5233"
+                    >Q4</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                Riwayat Transaksi
+              </h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr style="border-bottom: 2px solid #e5e7eb">
+                      <th class="text-left py-3 px-2" style="color: #6b7280">
+                        Tanggal
+                      </th>
+                      <th class="text-left py-3 px-2" style="color: #6b7280">
+                        Deskripsi
+                      </th>
+                      <th class="text-left py-3 px-2" style="color: #6b7280">
+                        Kategori
+                      </th>
+                      <th class="text-right py-3 px-2" style="color: #6b7280">
+                        Jumlah
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid #f3f4f6">
+                      <td class="py-3 px-2">15 Jan 2024</td>
+                      <td class="py-3 px-2">Penjualan Cabai Merah</td>
+                      <td class="py-3 px-2">
+                        <span class="land-status status-active">Pemasukan</span>
+                      </td>
+                      <td
+                        class="py-3 px-2 text-right font-bold"
+                        style="color: #10b981"
+                      >
+                        + Rp 28.500.000
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6">
+                      <td class="py-3 px-2">12 Jan 2024</td>
+                      <td class="py-3 px-2">Pembelian Pupuk Organik</td>
+                      <td class="py-3 px-2">
+                        <span class="land-status status-harvest"
+                          >Pengeluaran</span
+                        >
+                      </td>
+                      <td
+                        class="py-3 px-2 text-right font-bold"
+                        style="color: #ef4444"
+                      >
+                        - Rp 8.200.000
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6">
+                      <td class="py-3 px-2">10 Jan 2024</td>
+                      <td class="py-3 px-2">Dana Investor - Pak Budi</td>
+                      <td class="py-3 px-2">
+                        <span class="land-status status-active">Pemasukan</span>
+                      </td>
+                      <td
+                        class="py-3 px-2 text-right font-bold"
+                        style="color: #10b981"
+                      >
+                        + Rp 25.000.000
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #f3f4f6">
+                      <td class="py-3 px-2">08 Jan 2024</td>
+                      <td class="py-3 px-2">Biaya Tenaga Kerja</td>
+                      <td class="py-3 px-2">
+                        <span class="land-status status-harvest"
+                          >Pengeluaran</span
+                        >
+                      </td>
+                      <td
+                        class="py-3 px-2 text-right font-bold"
+                        style="color: #ef4444"
+                      >
+                        - Rp 12.000.000
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-3 px-2">05 Jan 2024</td>
+                      <td class="py-3 px-2">Penjualan Jagung Manis</td>
+                      <td class="py-3 px-2">
+                        <span class="land-status status-active">Pemasukan</span>
+                      </td>
+                      <td
+                        class="py-3 px-2 text-right font-bold"
+                        style="color: #10b981"
+                      >
+                        + Rp 18.750.000
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- Komunikasi Page -->
+          <div id="page-komunikasi" class="page-content hidden">
+            <h3 class="text-xl font-bold mb-6" style="color: #2f5233">
+              Komunikasi
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="lg:col-span-1">
+                <div class="card">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Kontak
+                  </h4>
+                  <div class="space-y-3">
+                    <div
+                      class="flex items-center gap-3 p-3 rounded-lg cursor-pointer"
+                      style="background: #f3f4f6"
+                    >
+                      <div
+                        class="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+                        style="background: #2f5233; color: white"
+                      >
+                        👨‍💼
+                      </div>
+                      <div class="flex-1">
+                        <p class="font-medium text-sm">Pak Budi (Investor)</p>
+                        <p class="text-xs" style="color: #6b7280">
+                          Terakhir: 2 jam lalu
+                        </p>
+                      </div>
+                      <div
+                        class="notification-badge"
+                        style="position: relative; top: 0; right: 0"
+                      >
+                        2
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50"
+                    >
+                      <div
+                        class="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+                        style="background: #4a7c4e; color: white"
+                      >
+                        👩‍💼
+                      </div>
+                      <div class="flex-1">
+                        <p class="font-medium text-sm">Ibu Siti (Investor)</p>
+                        <p class="text-xs" style="color: #6b7280">
+                          Terakhir: 1 hari lalu
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50"
+                    >
+                      <div
+                        class="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+                        style="background: #6b7280; color: white"
+                      >
+                        🛠️
+                      </div>
+                      <div class="flex-1">
+                        <p class="font-medium text-sm">Admin Platform</p>
+                        <p class="text-xs" style="color: #6b7280">
+                          Terakhir: 3 hari lalu
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-2">
+                <div
+                  class="card"
+                  style="height: 500px; display: flex; flex-direction: column"
+                >
+                  <div
+                    class="flex items-center gap-3 pb-4 border-b"
+                    style="border-color: #e5e7eb"
+                  >
+                    <div
+                      class="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+                      style="background: #2f5233; color: white"
+                    >
+                      👨‍💼
+                    </div>
+                    <div>
+                      <p class="font-medium">Pak Budi (Investor)</p>
+                      <p class="text-xs" style="color: #6b7280">Online</p>
+                    </div>
+                  </div>
+                  <div class="flex-1 overflow-y-auto py-4 space-y-4">
+                    <div class="flex gap-3">
+                      <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+                        style="background: #2f5233; color: white"
+                      >
+                        👨‍💼
+                      </div>
+                      <div class="flex-1">
+                        <div
+                          class="inline-block px-4 py-2 rounded-lg"
+                          style="background: #f3f4f6"
+                        >
+                          <p class="text-sm">
+                            Selamat pagi Pak Suryanto, bagaimana perkembangan
+                            tanaman padi di Lahan A?
+                          </p>
+                        </div>
+                        <p class="text-xs mt-1" style="color: #6b7280">09:15</p>
+                      </div>
+                    </div>
+                    <div class="flex gap-3 justify-end">
+                      <div class="flex-1 text-right">
+                        <div
+                          class="inline-block px-4 py-2 rounded-lg text-white"
+                          style="background: #2f5233"
+                        >
+                          <p class="text-sm">
+                            Pagi Pak Budi. Alhamdulillah perkembangannya sangat
+                            baik. Sudah memasuki fase pembungaan dengan progress
+                            75%.
+                          </p>
+                        </div>
+                        <p class="text-xs mt-1" style="color: #6b7280">09:18</p>
+                      </div>
+                      <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+                        style="background: #4a7c4e; color: white"
+                      >
+                        👨‍🌾
+                      </div>
+                    </div>
+                    <div class="flex gap-3 justify-end">
+                      <div class="flex-1 text-right">
+                        <div
+                          class="inline-block px-4 py-2 rounded-lg text-white"
+                          style="background: #2f5233"
+                        >
+                          <p class="text-sm">
+                            Saya akan upload foto terbaru hari ini.
+                          </p>
+                        </div>
+                        <p class="text-xs mt-1" style="color: #6b7280">09:18</p>
+                      </div>
+                      <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+                        style="background: #4a7c4e; color: white"
+                      >
+                        👨‍🌾
+                      </div>
+                    </div>
+                    <div class="flex gap-3">
+                      <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+                        style="background: #2f5233; color: white"
+                      >
+                        👨‍💼
+                      </div>
+                      <div class="flex-1">
+                        <div
+                          class="inline-block px-4 py-2 rounded-lg"
+                          style="background: #f3f4f6"
+                        >
+                          <p class="text-sm">
+                            Terima kasih Pak. Ditunggu update fotonya! 👍
+                          </p>
+                        </div>
+                        <p class="text-xs mt-1" style="color: #6b7280">09:20</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pt-4 border-t" style="border-color: #e5e7eb">
+                    <div class="flex gap-3">
+                      <button
+                        class="px-4 py-2 rounded-lg"
+                        style="background: #f3f4f6"
+                      >
+                        📎
+                      </button>
+                      <input
+                        type="text"
+                        placeholder="Ketik pesan..."
+                        class="flex-1 px-4 py-2 border rounded-lg"
+                        style="border-color: #d1d5db"
+                      />
+                      <button
+                        class="px-6 py-2 rounded-lg text-white font-medium"
+                        style="background: #2f5233"
+                      >
+                        Kirim
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mt-6">
+                  <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                    Upload Laporan Mingguan
+                  </h4>
+                  <div
+                    class="border-2 border-dashed rounded-lg p-8 text-center"
+                    style="border-color: #d1d5db"
+                  >
+                    <span class="text-5xl">📸</span>
+                    <p class="text-sm mt-3 font-medium" style="color: #2f5233">
+                      Upload Foto Perkembangan Tanaman
+                    </p>
+                    <p class="text-xs mt-1" style="color: #6b7280">
+                      Drag &amp; drop atau klik untuk memilih file
+                    </p>
+                    <button
+                      class="mt-4 px-6 py-2 rounded-lg text-white font-medium"
+                      style="background: #2f5233"
+                    >
+                      Pilih File
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Pengajuan Page -->
+          <div id="page-pengajuan" class="page-content hidden">
+            <h3 class="text-xl font-bold mb-6" style="color: #2f5233">
+              Pengajuan Dana Baru
+            </h3>
+            <div class="card max-w-3xl">
+              <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                Form Pengajuan Proyek
+              </h4>
+              <form onsubmit="handleSubmitProposal(event)" class="space-y-4">
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2"
+                    style="color: #2f5233"
+                    >Nama Proyek</label
+                  >
+                  <input
+                    type="text"
+                    required
+                    class="w-full px-4 py-2 border rounded-lg"
+                    style="border-color: #d1d5db"
+                    placeholder="Contoh: Budidaya Padi Organik Lahan F"
+                  />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      style="color: #2f5233"
+                      >Luas Lahan (Ha)</label
+                    >
+                    <input
+                      type="number"
+                      step="0.1"
+                      required
+                      class="w-full px-4 py-2 border rounded-lg"
+                      style="border-color: #d1d5db"
+                      placeholder="2.5"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      style="color: #2f5233"
+                      >Jenis Tanaman</label
+                    >
+                    <input
+                      type="text"
+                      required
+                      class="w-full px-4 py-2 border rounded-lg"
+                      style="border-color: #d1d5db"
+                      placeholder="Padi Organik"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2"
+                    style="color: #2f5233"
+                    >Dana yang Dibutuhkan</label
+                  >
+                  <input
+                    type="number"
+                    required
+                    class="w-full px-4 py-2 border rounded-lg"
+                    style="border-color: #d1d5db"
+                    placeholder="50000000"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2"
+                    style="color: #2f5233"
+                    >Durasi Proyek (Bulan)</label
+                  >
+                  <input
+                    type="number"
+                    required
+                    class="w-full px-4 py-2 border rounded-lg"
+                    style="border-color: #d1d5db"
+                    placeholder="4"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2"
+                    style="color: #2f5233"
+                    >Deskripsi Proyek</label
+                  >
+                  <textarea
+                    required
+                    rows="4"
+                    class="w-full px-4 py-2 border rounded-lg"
+                    style="border-color: #d1d5db"
+                    placeholder="Jelaskan detail proyek, target hasil panen, dan rencana pemasaran..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2"
+                    style="color: #2f5233"
+                    >Estimasi Hasil Panen (Ton)</label
+                  >
+                  <input
+                    type="number"
+                    step="0.1"
+                    required
+                    class="w-full px-4 py-2 border rounded-lg"
+                    style="border-color: #d1d5db"
+                    placeholder="5.5"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium mb-2"
+                    style="color: #2f5233"
+                    >Dokumen Pendukung</label
+                  >
+                  <div
+                    class="border-2 border-dashed rounded-lg p-6 text-center"
+                    style="border-color: #d1d5db"
+                  >
+                    <span class="text-3xl">📄</span>
+                    <p class="text-sm mt-2" style="color: #6b7280">
+                      Upload sertifikat lahan, foto lokasi, dll
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  class="w-full py-3 rounded-lg text-white font-medium text-lg"
+                  style="background: #2f5233"
+                >
+                  Ajukan Proyek
+                </button>
+              </form>
+            </div>
+          </div>
+          <!-- Bantuan Page -->
+          <div id="page-bantuan" class="page-content hidden">
+            <h3 class="text-xl font-bold mb-6" style="color: #2f5233">
+              Bantuan &amp; Edukasi
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div class="card cursor-pointer">
+                <div class="text-4xl mb-3">📖</div>
+                <h4 class="font-bold mb-2" style="color: #2f5233">
+                  Panduan Platform
+                </h4>
+                <p class="text-sm" style="color: #6b7280">
+                  Pelajari cara menggunakan semua fitur dashboard
+                </p>
+              </div>
+              <div class="card cursor-pointer">
+                <div class="text-4xl mb-3">🌱</div>
+                <h4 class="font-bold mb-2" style="color: #2f5233">
+                  Tips Budidaya
+                </h4>
+                <p class="text-sm" style="color: #6b7280">
+                  Teknik dan tips meningkatkan hasil panen
+                </p>
+              </div>
+              <div class="card cursor-pointer">
+                <div class="text-4xl mb-3">💰</div>
+                <h4 class="font-bold mb-2" style="color: #2f5233">
+                  Manajemen Keuangan
+                </h4>
+                <p class="text-sm" style="color: #6b7280">
+                  Kelola keuangan pertanian dengan efektif
+                </p>
+              </div>
+              <div class="card cursor-pointer">
+                <div class="text-4xl mb-3">🎥</div>
+                <h4 class="font-bold mb-2" style="color: #2f5233">
+                  Video Tutorial
+                </h4>
+                <p class="text-sm" style="color: #6b7280">
+                  Tonton video panduan langkah demi langkah
+                </p>
+              </div>
+              <div class="card cursor-pointer">
+                <div class="text-4xl mb-3">❓</div>
+                <h4 class="font-bold mb-2" style="color: #2f5233">FAQ</h4>
+                <p class="text-sm" style="color: #6b7280">
+                  Pertanyaan yang sering diajukan
+                </p>
+              </div>
+              <div class="card cursor-pointer">
+                <div class="text-4xl mb-3">📞</div>
+                <h4 class="font-bold mb-2" style="color: #2f5233">
+                  Hubungi Support
+                </h4>
+                <p class="text-sm" style="color: #6b7280">
+                  Butuh bantuan? Hubungi tim kami
+                </p>
+              </div>
+            </div>
+            <div class="card mt-6">
+              <h4 class="font-bold text-lg mb-4" style="color: #2f5233">
+                Artikel Terbaru
+              </h4>
+              <div class="space-y-4">
+                <div
+                  class="flex gap-4 pb-4 border-b"
+                  style="border-color: #e5e7eb"
+                >
+                  <div
+                    class="w-24 h-24 rounded-lg flex items-center justify-center text-3xl"
+                    style="background: #f3f4f6"
+                  >
+                    🌾
+                  </div>
+                  <div class="flex-1">
+                    <h5 class="font-bold mb-1" style="color: #2f5233">
+                      5 Cara Meningkatkan Hasil Panen Padi
+                    </h5>
+                    <p class="text-sm mb-2" style="color: #6b7280">
+                      Teknik modern untuk memaksimalkan produktivitas lahan padi
+                      Anda...
+                    </p>
+                    <p class="text-xs" style="color: #6b7280">
+                      2 hari yang lalu
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="flex gap-4 pb-4 border-b"
+                  style="border-color: #e5e7eb"
+                >
+                  <div
+                    class="w-24 h-24 rounded-lg flex items-center justify-center text-3xl"
+                    style="background: #f3f4f6"
+                  >
+                    🐛
+                  </div>
+                  <div class="flex-1">
+                    <h5 class="font-bold mb-1" style="color: #2f5233">
+                      Mengatasi Hama Tanaman Secara Organik
+                    </h5>
+                    <p class="text-sm mb-2" style="color: #6b7280">
+                      Solusi alami untuk melindungi tanaman dari serangan
+                      hama...
+                    </p>
+                    <p class="text-xs" style="color: #6b7280">
+                      5 hari yang lalu
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div
+                    class="w-24 h-24 rounded-lg flex items-center justify-center text-3xl"
+                    style="background: #f3f4f6"
+                  >
+                    💧
+                  </div>
+                  <div class="flex-1">
+                    <h5 class="font-bold mb-1" style="color: #2f5233">
+                      Sistem Irigasi Efisien untuk Lahan Kecil
+                    </h5>
+                    <p class="text-sm mb-2" style="color: #6b7280">
+                      Hemat air dan biaya dengan teknik irigasi yang tepat...
+                    </p>
+                    <p class="text-xs" style="color: #6b7280">
+                      1 minggu yang lalu
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const defaultConfig = {
+        farmer_name: "Bapak Suryanto",
+        season_info: "Musim Tanam 2024 - Padi Organik",
+        welcome_message: "Selamat Datang di Dashboard Anda",
+      };
+
+      async function onConfigChange(config) {
+        const farmerName = config.farmer_name || defaultConfig.farmer_name;
+        const seasonInfo = config.season_info || defaultConfig.season_info;
+        const welcomeMessage =
+          config.welcome_message || defaultConfig.welcome_message;
+
+        document.getElementById("farmer-name").textContent = farmerName;
+        document.getElementById("season-info").textContent = seasonInfo;
+        document.getElementById("welcome-message").textContent = welcomeMessage;
+      }
+
+      function mapToCapabilities(config) {
+        return {
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined,
+        };
+      }
+
+      function mapToEditPanelValues(config) {
+        return new Map([
+          ["farmer_name", config.farmer_name || defaultConfig.farmer_name],
+          ["season_info", config.season_info || defaultConfig.season_info],
+          [
+            "welcome_message",
+            config.welcome_message || defaultConfig.welcome_message,
+          ],
+        ]);
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues,
+        });
+      }
+
+      function showPage(pageName) {
+        const pages = document.querySelectorAll(".page-content");
+        pages.forEach((page) => page.classList.add("hidden"));
+
+        const targetPage = document.getElementById(`page-${pageName}`);
+        if (targetPage) {
+          targetPage.classList.remove("hidden");
+        }
+
+        const menuItems = document.querySelectorAll(".menu-item");
+        menuItems.forEach((item) => item.classList.remove("active"));
+        event.currentTarget.classList.add("active");
+      }
+
+      function showAddLandForm() {
+        document.getElementById("add-land-form").classList.remove("hidden");
+        document.getElementById("land-list").style.opacity = "0.5";
+      }
+
+      function hideAddLandForm() {
+        document.getElementById("add-land-form").classList.add("hidden");
+        document.getElementById("land-list").style.opacity = "1";
+      }
+
+      function handleAddLand(event) {
+        event.preventDefault();
+        hideAddLandForm();
+
+        const notification = document.createElement("div");
+        notification.className =
+          "fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium shadow-lg";
+        notification.style.background = "#2F5233";
+        notification.textContent = "✓ Lahan baru berhasil ditambahkan!";
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+        }, 3000);
+      }
+
+      function handleSubmitProposal(event) {
+        event.preventDefault();
+
+        const notification = document.createElement("div");
+        notification.className =
+          "fixed top-4 right-4 px-6 py-3 rounded-lg text-white font-medium shadow-lg";
+        notification.style.background = "#2F5233";
+        notification.textContent = "✓ Pengajuan proyek berhasil dikirim!";
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+          event.target.reset();
+        }, 3000);
+      }
+    </script>
+    <script>
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'99bdf7e361621f6e',t:'MTc2MjY5ODIxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
+        }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>
