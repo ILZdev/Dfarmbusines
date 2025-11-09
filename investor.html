@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Investor</title>
+    <title>Dashboard Investor Pertanian</title>
     <script src="/_sdk/element_sdk.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -15,128 +15,350 @@
         box-sizing: border-box;
       }
 
-      html,
+      :root {
+        --dark-green: #1b4332;
+        --medium-green: #2d6a4f;
+        --light-green: #40916c;
+        --gold: #d4af37;
+        --light-gold: #f4e4c1;
+        --white: #ffffff;
+        --light-gray: #f8f9fa;
+        --text-dark: #1a1a1a;
+        --text-gray: #6c757d;
+      }
+
       body {
-        height: 100%;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-gray);
         margin: 0;
         padding: 0;
+        height: 100%;
       }
 
       .dashboard-container {
+        display: flex;
         height: 100%;
-        overflow: hidden;
-      }
-
-      .main-content {
-        height: 100%;
-        overflow-y: auto;
+        min-height: 100%;
       }
 
       .sidebar {
-        height: 100%;
+        width: 280px;
+        background: linear-gradient(
+          180deg,
+          var(--dark-green) 0%,
+          var(--medium-green) 100%
+        );
+        color: white;
+        padding: 24px 0;
         overflow-y: auto;
+        flex-shrink: 0;
+        box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
       }
 
-      .card {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-        transition: transform 0.3s, box-shadow 0.3s;
+      .sidebar-logo {
+        padding: 0 24px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        margin-bottom: 24px;
       }
 
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      .sidebar-logo h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .sidebar-logo p {
+        margin: 8px 0 0 0;
+        font-size: 13px;
+        opacity: 0.8;
       }
 
       .menu-item {
-        transition: all 0.3s;
+        padding: 14px 24px;
         cursor: pointer;
-        border-left: 3px solid transparent;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 15px;
+        border-left: 4px solid transparent;
       }
 
       .menu-item:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-left-color: #d4af37;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-left-color: var(--gold);
       }
 
       .menu-item.active {
-        background: rgba(255, 255, 255, 0.12);
-        border-left-color: #d4af37;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-left-color: var(--gold);
+        font-weight: 600;
       }
 
-      .progress-bar {
-        height: 10px;
-        background: #e5e7eb;
-        border-radius: 5px;
-        overflow: hidden;
+      .menu-icon {
+        font-size: 20px;
+        width: 24px;
+        text-align: center;
       }
 
-      .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #1b4332, #2d6a4f);
-        transition: width 0.5s ease;
+      .main-content {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--white) 0%,
+          var(--light-gray) 100%
+        );
+        padding: 24px 32px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--gold);
+      }
+
+      .header-left h1 {
+        margin: 0 0 6px 0;
+        font-size: 26px;
+        color: var(--dark-green);
+        font-weight: 700;
+      }
+
+      .header-left p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-gray);
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .balance-card {
+        background: linear-gradient(
+          135deg,
+          var(--dark-green),
+          var(--medium-green)
+        );
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(27, 67, 50, 0.3);
+      }
+
+      .balance-card .label {
+        font-size: 12px;
+        opacity: 0.9;
+        margin-bottom: 4px;
+      }
+
+      .balance-card .amount {
+        font-size: 24px;
+        font-weight: 700;
       }
 
       .notification-badge {
-        position: absolute;
-        top: -6px;
-        right: -6px;
-        background: #d4af37;
-        color: #1b4332;
+        position: relative;
+        cursor: pointer;
+        padding: 10px;
         border-radius: 50%;
-        width: 22px;
-        height: 22px;
+        transition: background-color 0.2s;
+      }
+
+      .notification-badge:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .badge-count {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 11px;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+        font-weight: 700;
+      }
+
+      .content-area {
+        padding: 32px;
+        flex: 1;
+      }
+
+      .page-section {
+        display: none;
+      }
+
+      .page-section.active {
+        display: block;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+        margin-bottom: 32px;
       }
 
       .stat-card {
-        background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
-        color: white;
-        border-radius: 16px;
+        background: white;
         padding: 28px;
-        position: relative;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        border-top: 4px solid var(--gold);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .stat-card h3 {
+        margin: 0 0 12px 0;
+        font-size: 14px;
+        color: var(--text-gray);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-card .value {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--dark-green);
+        margin: 0 0 8px 0;
+      }
+
+      .stat-card .subtext {
+        font-size: 14px;
+        color: #28a745;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .card {
+        background: white;
+        padding: 28px;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 24px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid var(--light-gray);
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 20px;
+        color: var(--dark-green);
+        font-weight: 700;
+      }
+
+      .progress-bar {
+        background-color: #e9ecef;
+        border-radius: 10px;
+        height: 14px;
         overflow: hidden;
+        margin: 12px 0;
       }
 
-      .stat-card::before {
-        content: "";
+      .progress-fill {
+        background: linear-gradient(90deg, var(--light-green), var(--gold));
+        height: 100%;
+        transition: width 0.5s ease;
+        border-radius: 10px;
+      }
+
+      .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+      }
+
+      .project-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid #e9ecef;
+      }
+
+      .project-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      }
+
+      .project-image {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(
+          135deg,
+          var(--light-green),
+          var(--medium-green)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 64px;
+        position: relative;
+      }
+
+      .project-badge {
         position: absolute;
-        top: -30%;
-        right: -15%;
-        width: 180px;
-        height: 180px;
-        background: rgba(212, 175, 55, 0.15);
-        border-radius: 50%;
+        top: 16px;
+        right: 16px;
+        background-color: var(--gold);
+        color: var(--dark-green);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
       }
 
-      .stat-card::after {
-        content: "";
-        position: absolute;
-        bottom: -40%;
-        left: -10%;
-        width: 150px;
-        height: 150px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 50%;
+      .project-info {
+        padding: 24px;
       }
 
-      .gold-accent {
-        color: #d4af37;
+      .project-info h3 {
+        margin: 0 0 8px 0;
+        color: var(--dark-green);
+        font-size: 18px;
+        font-weight: 700;
       }
 
-      .gold-bg {
-        background: #d4af37;
-      }
-
-      .gold-border {
-        border-color: #d4af37;
+      .project-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 0;
+        font-size: 14px;
+        color: var(--text-gray);
       }
 
       .status-badge {
@@ -145,61 +367,514 @@
         border-radius: 20px;
         font-size: 12px;
         font-weight: 600;
+        margin-top: 12px;
       }
 
-      .status-planting {
-        background: #dbeafe;
-        color: #1e40af;
+      .status-active {
+        background-color: #d1fae5;
+        color: #065f46;
       }
 
       .status-harvest {
-        background: #fef3c7;
+        background-color: var(--light-gold);
         color: #92400e;
       }
 
       .status-ready {
-        background: #d1fae5;
-        color: #065f46;
+        background-color: #dbeafe;
+        color: #1e40af;
       }
 
-      .risk-low {
-        background: #d1fae5;
-        color: #065f46;
-      }
-
-      .risk-medium {
-        background: #fef3c7;
-        color: #92400e;
-      }
-
-      .risk-high {
-        background: #fee2e2;
-        color: #991b1b;
-      }
-
-      .project-card {
-        border: 2px solid #f3f4f6;
+      .btn {
+        padding: 12px 28px;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
         transition: all 0.3s;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      .project-card:hover {
-        border-color: #d4af37;
+      .btn-primary {
+        background: linear-gradient(135deg, var(--gold), #c9a227);
+        color: var(--dark-green);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+      }
+
+      .btn-secondary {
+        background-color: var(--dark-green);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--medium-green);
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 2px solid var(--dark-green);
+        color: var(--dark-green);
+      }
+
+      .btn-outline:hover {
+        background-color: var(--dark-green);
+        color: white;
+      }
+
+      .chart-container {
+        height: 300px;
+        display: flex;
+        align-items: flex-end;
+        gap: 24px;
+        padding: 24px 0;
+        border-bottom: 2px solid #e9ecef;
       }
 
       .chart-bar {
-        transition: height 0.5s ease;
+        flex: 1;
+        background: linear-gradient(
+          to top,
+          var(--medium-green),
+          var(--light-green)
+        );
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        padding-bottom: 12px;
+        color: white;
+        font-weight: 700;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+
+      .chart-bar:hover {
+        background: linear-gradient(
+          to top,
+          var(--dark-green),
+          var(--medium-green)
+        );
+      }
+
+      .chart-label {
+        margin-top: 12px;
+        text-align: center;
+        font-size: 13px;
+        color: var(--text-gray);
+        font-weight: 600;
+      }
+
+      .transaction-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .transaction-table th {
+        text-align: left;
+        padding: 16px;
+        background-color: var(--light-gray);
+        color: var(--dark-green);
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .transaction-table td {
+        padding: 16px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .transaction-table tr:hover {
+        background-color: var(--light-gray);
+      }
+
+      .market-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+
+      .market-card {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        border-left: 4px solid var(--gold);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .market-card h4 {
+        margin: 0 0 12px 0;
+        color: var(--dark-green);
+        font-size: 16px;
+      }
+
+      .price-display {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--dark-green);
+        margin: 8px 0;
+      }
+
+      .price-change {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .price-up {
+        color: #28a745;
+      }
+
+      .price-down {
+        color: #dc3545;
+      }
+
+      .chat-container {
+        display: flex;
+        gap: 24px;
+        height: 600px;
+      }
+
+      .chat-list {
+        width: 320px;
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        overflow-y: auto;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .chat-item {
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid #e9ecef;
+      }
+
+      .chat-item:hover {
+        background-color: var(--light-gray);
+        border-color: var(--gold);
+      }
+
+      .chat-item.active {
+        background: linear-gradient(
+          135deg,
+          var(--dark-green),
+          var(--medium-green)
+        );
+        color: white;
+        border-color: var(--dark-green);
+      }
+
+      .chat-window {
+        flex: 1;
+        background: white;
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .chat-header {
+        padding: 24px;
+        border-bottom: 2px solid var(--light-gray);
+        background: linear-gradient(135deg, var(--light-gray), white);
+      }
+
+      .chat-messages {
+        flex: 1;
+        padding: 24px;
+        overflow-y: auto;
+      }
+
+      .chat-input-area {
+        padding: 24px;
+        border-top: 2px solid var(--light-gray);
+        display: flex;
+        gap: 12px;
+      }
+
+      .chat-input {
+        flex: 1;
+        padding: 14px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+      }
+
+      .chat-input:focus {
+        outline: none;
+        border-color: var(--gold);
+      }
+
+      .message {
+        margin-bottom: 20px;
+        max-width: 70%;
+      }
+
+      .message.sent {
+        margin-left: auto;
+        background: linear-gradient(
+          135deg,
+          var(--dark-green),
+          var(--medium-green)
+        );
+        color: white;
+        padding: 14px 18px;
+        border-radius: 16px 16px 4px 16px;
+      }
+
+      .message.received {
+        background-color: var(--light-gray);
+        padding: 14px 18px;
+        border-radius: 16px 16px 16px 4px;
+      }
+
+      .roi-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background-color: var(--light-gold);
+        color: var(--dark-green);
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin: 16px 0;
+      }
+
+      .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px;
+        background-color: var(--light-gray);
+        border-radius: 8px;
+      }
+
+      .info-label {
+        color: var(--text-gray);
+        font-size: 14px;
+      }
+
+      .info-value {
+        color: var(--dark-green);
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      @media (max-width: 1024px) {
+        .sidebar {
+          width: 240px;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .project-grid {
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
       }
 
       @media (max-width: 768px) {
-        .sidebar {
-          position: fixed;
-          left: -100%;
-          transition: left 0.3s;
-          z-index: 50;
+        .dashboard-container {
+          flex-direction: column;
         }
 
-        .sidebar.open {
+        .sidebar {
+          width: 100%;
+          padding: 16px 0;
+        }
+
+        .content-area {
+          padding: 20px;
+        }
+
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+          padding: 20px;
+        }
+
+        .header-right {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .chat-container {
+          flex-direction: column;
+          height: auto;
+        }
+
+        .chat-list {
+          width: 100%;
+          height: 250px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .project-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .market-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .sidebar {
+          position: fixed;
+          bottom: 0;
           left: 0;
+          right: 0;
+          width: 100%;
+          height: auto;
+          padding: 0;
+          z-index: 100;
+          box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+          display: flex;
+          overflow-x: auto;
+          overflow-y: hidden;
+          background: linear-gradient(
+            90deg,
+            var(--dark-green) 0%,
+            var(--medium-green) 100%
+          );
+        }
+
+        .sidebar-logo {
+          display: none;
+        }
+
+        .menu-item {
+          padding: 12px 10px;
+          font-size: 10px;
+          flex-direction: column;
+          gap: 4px;
+          text-align: center;
+          border-left: none;
+          border-top: 3px solid transparent;
+          flex: 1;
+          min-width: 75px;
+          white-space: nowrap;
+        }
+
+        .menu-item.active {
+          border-left: none;
+          border-top: 3px solid var(--gold);
+          background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .menu-item:hover {
+          border-left: none;
+          border-top: 3px solid var(--gold);
+        }
+
+        .menu-icon {
+          font-size: 24px;
+        }
+
+        .main-content {
+          padding-bottom: 85px;
+        }
+
+        .header {
+          padding: 16px;
+        }
+
+        .header-left h1 {
+          font-size: 22px;
+        }
+
+        .balance-card {
+          padding: 12px 16px;
+        }
+
+        .balance-card .amount {
+          font-size: 20px;
+        }
+
+        .content-area {
+          padding: 16px;
+        }
+
+        .card {
+          padding: 20px;
+        }
+
+        .stat-card {
+          padding: 20px;
+        }
+
+        .stat-card .value {
+          font-size: 28px;
+        }
+
+        .project-image {
+          height: 160px;
+          font-size: 48px;
+        }
+
+        .project-info {
+          padding: 16px;
+        }
+
+        .chart-container {
+          height: 200px;
+          gap: 12px;
+        }
+
+        .transaction-table {
+          font-size: 12px;
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+          padding: 10px 8px;
+        }
+
+        .chat-container {
+          height: calc(100% - 100px);
+        }
+
+        .chat-list {
+          height: 180px;
+        }
+
+        .message {
+          max-width: 85%;
+          font-size: 14px;
+        }
+
+        .btn {
+          padding: 10px 20px;
+          font-size: 13px;
         }
       }
     </style>
@@ -211,1711 +886,1735 @@
     <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
   </head>
   <body>
-    <div class="dashboard-container flex" style="background: #f9fafb">
+    <div class="dashboard-container">
       <!-- Sidebar -->
-      <div
-        class="sidebar w-72 flex-shrink-0"
-        style="background: linear-gradient(180deg, #1b4332 0%, #0f2419 100%)"
-      >
-        <div class="p-6">
-          <div class="flex items-center gap-3 mb-8">
-            <div
-              class="w-14 h-14 rounded-full flex items-center justify-center text-3xl gold-bg"
-            >
-              🌾
-            </div>
-            <div>
-              <h1 class="text-white font-bold text-xl">AgriInvest</h1>
-              <p class="text-xs gold-accent">Platform Investasi Pertanian</p>
-            </div>
-          </div>
-          <nav class="space-y-2">
-            <div
-              class="menu-item active flex items-center gap-3 px-4 py-3 rounded-lg text-white"
-              onclick="showPage('overview')"
-            >
-              <span class="text-xl">📊</span>
-              <span class="font-medium">Ringkasan Portofolio</span>
-            </div>
-            <div
-              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
-              onclick="showPage('aktif')"
-            >
-              <span class="text-xl">🌱</span>
-              <span class="font-medium">Proyek Aktif</span>
-            </div>
-            <div
-              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
-              onclick="showPage('peluang')"
-            >
-              <span class="text-xl">💎</span>
-              <span class="font-medium">Proyek Siap Didanai</span>
-            </div>
-            <div
-              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
-              onclick="showPage('keuangan')"
-            >
-              <span class="text-xl">💰</span>
-              <span class="font-medium">Laporan Keuangan</span>
-            </div>
-            <div
-              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
-              onclick="showPage('analisis')"
-            >
-              <span class="text-xl">📈</span>
-              <span class="font-medium">Analisis Pasar</span>
-            </div>
-            <div
-              class="menu-item flex items-center gap-3 px-4 py-3 rounded-lg text-white"
-              onclick="showPage('komunikasi')"
-            >
-              <span class="text-xl">💬</span>
-              <span class="font-medium">Komunikasi</span>
-            </div>
-          </nav>
-          <div
-            class="mt-8 p-4 rounded-lg"
-            style="
-              background: rgba(212, 175, 55, 0.15);
-              border: 1px solid rgba(212, 175, 55, 0.3);
-            "
-          >
-            <p class="text-xs gold-accent font-semibold mb-2">
-              💡 Tips Investasi
-            </p>
-            <p class="text-xs text-white opacity-90">
-              Diversifikasi portofolio Anda dengan berinvestasi di berbagai
-              jenis tanaman dan wilayah.
-            </p>
-          </div>
+      <div class="sidebar">
+        <div class="sidebar-logo">
+          <h2>💎 AgriInvest</h2>
+          <p>Platform Investasi Pertanian</p>
+        </div>
+        <div class="menu-item active" data-page="overview">
+          <span class="menu-icon">📊</span> <span>Ringkasan Portofolio</span>
+        </div>
+        <div class="menu-item" data-page="active-projects">
+          <span class="menu-icon">🌱</span> <span>Proyek Aktif</span>
+        </div>
+        <div class="menu-item" data-page="funding-opportunities">
+          <span class="menu-icon">💰</span> <span>Proyek Siap Didanai</span>
+        </div>
+        <div class="menu-item" data-page="finance">
+          <span class="menu-icon">📈</span> <span>Laporan Keuangan</span>
+        </div>
+        <div class="menu-item" data-page="market">
+          <span class="menu-icon">📉</span> <span>Analisis Pasar</span>
+        </div>
+        <div class="menu-item" data-page="communication">
+          <span class="menu-icon">💬</span> <span>Komunikasi / Forum</span>
         </div>
       </div>
       <!-- Main Content -->
-      <div class="flex-1 flex flex-col min-w-0">
+      <div class="main-content">
         <!-- Header -->
-        <header
-          class="bg-white shadow-sm px-8 py-5 flex items-center justify-between flex-shrink-0"
-        >
-          <div>
-            <h2
-              class="text-2xl font-bold"
-              style="color: #1b4332"
-              id="investor-name"
-            >
-              Bapak Hartono Wijaya
-            </h2>
-            <p class="text-sm font-semibold gold-accent" id="investor-balance">
-              Saldo: Rp 250.000.000
-            </p>
+        <div class="header">
+          <div class="header-left">
+            <h1 id="investor-name">Bapak Hartono Wijaya</h1>
+            <p id="investor-title">Angel Investor - Sektor Agrikultur</p>
           </div>
-          <div class="flex items-center gap-5">
-            <div class="relative cursor-pointer">
-              <span class="text-2xl">🔔</span>
-              <div class="notification-badge">5</div>
+          <div class="header-right">
+            <div class="balance-card">
+              <div class="label">Total Saldo Tersedia</div>
+              <div class="amount">Rp 250 Juta</div>
             </div>
-            <div class="flex items-center gap-3">
-              <div>
-                <p
-                  class="text-sm font-semibold text-right"
-                  style="color: #1b4332"
-                >
-                  Investor Premium
-                </p>
-                <p class="text-xs text-right" style="color: #6b7280">
-                  Member sejak 2023
-                </p>
-              </div>
-              <div
-                class="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
-                style="
-                  background: linear-gradient(135deg, #1b4332, #2d6a4f);
-                  color: white;
-                "
-              >
-                👨‍💼
-              </div>
+            <div class="notification-badge">
+              <span style="font-size: 28px">🔔</span>
+              <span class="badge-count">5</span>
             </div>
           </div>
-        </header>
-        <!-- Page Content -->
-        <div class="main-content flex-1 p-8">
+        </div>
+        <!-- Content Area -->
+        <div class="content-area">
           <!-- Overview Page -->
-          <div id="page-overview" class="page-content">
-            <h3
-              class="text-2xl font-bold mb-6"
-              style="color: #1b4332"
+          <div class="page-section active" id="overview">
+            <h2
+              style="
+                color: var(--dark-green);
+                margin-bottom: 28px;
+                font-size: 28px;
+              "
               id="welcome-message"
             >
               Selamat Datang di Dashboard Investasi Anda
-            </h3>
+            </h2>
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stats-grid">
               <div class="stat-card">
-                <div class="relative z-10">
-                  <p class="text-sm opacity-90 mb-2">Total Proyek Aktif</p>
-                  <p class="text-4xl font-bold mb-1">12</p>
-                  <p class="text-xs opacity-80 gold-accent">
-                    ↑ 3 proyek baru bulan ini
-                  </p>
-                </div>
+                <h3>Total Proyek Aktif</h3>
+                <p class="value">12</p>
+                <p class="subtext">
+                  <span>↗</span> <span>+3 proyek bulan ini</span>
+                </p>
               </div>
               <div class="stat-card">
-                <div class="relative z-10">
-                  <p class="text-sm opacity-90 mb-2">Total Dana Tertanam</p>
-                  <p class="text-4xl font-bold mb-1">Rp 450 Jt</p>
-                  <p class="text-xs opacity-80 gold-accent">Dari 12 proyek</p>
-                </div>
+                <h3>Total Dana Tertanam</h3>
+                <p class="value">Rp 850 Jt</p>
+                <p class="subtext">
+                  <span>💼</span> <span>Tersebar di 12 proyek</span>
+                </p>
               </div>
               <div class="stat-card">
-                <div class="relative z-10">
-                  <p class="text-sm opacity-90 mb-2">Total Profit Sementara</p>
-                  <p class="text-4xl font-bold mb-1">Rp 87.5 Jt</p>
-                  <p class="text-xs opacity-80 gold-accent">
-                    ROI rata-rata: 19.4%
-                  </p>
-                </div>
+                <h3>Total Profit Sementara</h3>
+                <p class="value">Rp 127 Jt</p>
+                <p class="subtext">
+                  <span>📈</span> <span>ROI rata-rata 14.9%</span>
+                </p>
               </div>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <!-- ROI Chart -->
-              <div class="lg:col-span-2">
-                <div class="card">
-                  <h4 class="font-bold text-xl mb-6" style="color: #1b4332">
-                    Grafik ROI Rata-rata per Proyek
-                  </h4>
-                  <div
-                    class="flex items-end justify-around gap-4 px-4"
-                    style="height: 280px"
+            <!-- ROI Chart -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Grafik ROI Rata-rata per Proyek</h2>
+                <span class="roi-indicator">
+                  <span>⭐</span> <span>14.9% ROI</span>
+                </span>
+              </div>
+              <div class="chart-container">
+                <div class="chart-bar" style="height: 65%">
+                  <span>12%</span>
+                </div>
+                <div class="chart-bar" style="height: 80%">
+                  <span>16%</span>
+                </div>
+                <div class="chart-bar" style="height: 55%">
+                  <span>11%</span>
+                </div>
+                <div class="chart-bar" style="height: 90%">
+                  <span>18%</span>
+                </div>
+                <div class="chart-bar" style="height: 70%">
+                  <span>14%</span>
+                </div>
+                <div class="chart-bar" style="height: 75%">
+                  <span>15%</span>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-around;
+                  margin-top: 8px;
+                "
+              >
+                <div class="chart-label">Padi</div>
+                <div class="chart-label">Jagung</div>
+                <div class="chart-label">Cabai</div>
+                <div class="chart-label">Sayuran</div>
+                <div class="chart-label">Buah</div>
+                <div class="chart-label">Organik</div>
+              </div>
+            </div>
+            <!-- Project Status -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Status Proyek Aktif</h2>
+              </div>
+              <div style="margin-bottom: 24px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <span style="font-weight: 600; color: var(--dark-green)"
+                    >Proyek Padi Organik - Pak Suryanto</span
                   >
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                      <div
-                        class="w-full rounded-t-lg chart-bar"
-                        style="
-                          background: linear-gradient(180deg, #d4af37, #b8941f);
-                          height: 65%;
-                        "
-                      ></div>
-                      <span class="text-xs font-medium" style="color: #6b7280"
-                        >Padi</span
-                      >
-                      <span class="text-sm font-bold gold-accent">18%</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                      <div
-                        class="w-full rounded-t-lg chart-bar"
-                        style="
-                          background: linear-gradient(180deg, #2d6a4f, #1b4332);
-                          height: 85%;
-                        "
-                      ></div>
-                      <span class="text-xs font-medium" style="color: #6b7280"
-                        >Jagung</span
-                      >
-                      <span class="text-sm font-bold" style="color: #2d6a4f"
-                        >22%</span
-                      >
-                    </div>
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                      <div
-                        class="w-full rounded-t-lg chart-bar"
-                        style="
-                          background: linear-gradient(180deg, #d4af37, #b8941f);
-                          height: 95%;
-                        "
-                      ></div>
-                      <span class="text-xs font-medium" style="color: #6b7280"
-                        >Cabai</span
-                      >
-                      <span class="text-sm font-bold gold-accent">25%</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                      <div
-                        class="w-full rounded-t-lg chart-bar"
-                        style="
-                          background: linear-gradient(180deg, #2d6a4f, #1b4332);
-                          height: 70%;
-                        "
-                      ></div>
-                      <span class="text-xs font-medium" style="color: #6b7280"
-                        >Sayuran</span
-                      >
-                      <span class="text-sm font-bold" style="color: #2d6a4f"
-                        >19%</span
-                      >
-                    </div>
-                    <div class="flex flex-col items-center gap-2 flex-1">
-                      <div
-                        class="w-full rounded-t-lg chart-bar"
-                        style="
-                          background: linear-gradient(180deg, #d4af37, #b8941f);
-                          height: 55%;
-                        "
-                      ></div>
-                      <span class="text-xs font-medium" style="color: #6b7280"
-                        >Buah</span
-                      >
-                      <span class="text-sm font-bold gold-accent">15%</span>
-                    </div>
-                  </div>
+                  <span style="color: var(--text-gray)"
+                    >Dalam Masa Tanam - 75%</span
+                  >
                 </div>
-                <!-- Project Status -->
-                <div class="card mt-6">
-                  <h4 class="font-bold text-xl mb-6" style="color: #1b4332">
-                    Status Proyek Terkini
-                  </h4>
-                  <div class="space-y-5">
-                    <div>
-                      <div class="flex justify-between mb-2">
-                        <div>
-                          <span class="font-semibold" style="color: #1b4332"
-                            >Padi Organik - Pak Suryanto</span
-                          >
-                          <span class="ml-3 status-badge status-planting"
-                            >Masa Tanam</span
-                          >
-                        </div>
-                        <span class="font-bold gold-accent">75%</span>
-                      </div>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: 75%"></div>
-                      </div>
-                      <p class="text-xs mt-2" style="color: #6b7280">
-                        Estimasi panen: 45 hari lagi
-                      </p>
-                    </div>
-                    <div>
-                      <div class="flex justify-between mb-2">
-                        <div>
-                          <span class="font-semibold" style="color: #1b4332"
-                            >Cabai Merah - Bu Siti</span
-                          >
-                          <span class="ml-3 status-badge status-harvest"
-                            >Panen</span
-                          >
-                        </div>
-                        <span class="font-bold gold-accent">90%</span>
-                      </div>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: 90%"></div>
-                      </div>
-                      <p class="text-xs mt-2" style="color: #6b7280">
-                        Panen dimulai minggu depan
-                      </p>
-                    </div>
-                    <div>
-                      <div class="flex justify-between mb-2">
-                        <div>
-                          <span class="font-semibold" style="color: #1b4332"
-                            >Jagung Manis - Pak Budi</span
-                          >
-                          <span class="ml-3 status-badge status-ready"
-                            >Siap Jual</span
-                          >
-                        </div>
-                        <span class="font-bold gold-accent">100%</span>
-                      </div>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: 100%"></div>
-                      </div>
-                      <p class="text-xs mt-2" style="color: #6b7280">
-                        Hasil panen siap didistribusikan
-                      </p>
-                    </div>
-                    <div>
-                      <div class="flex justify-between mb-2">
-                        <div>
-                          <span class="font-semibold" style="color: #1b4332"
-                            >Sayuran Hijau - Pak Ahmad</span
-                          >
-                          <span class="ml-3 status-badge status-planting"
-                            >Masa Tanam</span
-                          >
-                        </div>
-                        <span class="font-bold gold-accent">45%</span>
-                      </div>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: 45%"></div>
-                      </div>
-                      <p class="text-xs mt-2" style="color: #6b7280">
-                        Estimasi panen: 60 hari lagi
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Quick Stats -->
-              <div class="lg:col-span-1">
-                <div class="card">
-                  <h4 class="font-bold text-xl mb-4" style="color: #1b4332">
-                    Ringkasan Cepat
-                  </h4>
-                  <div class="space-y-4">
-                    <div class="p-4 rounded-lg" style="background: #f0fdf4">
-                      <p class="text-xs mb-1" style="color: #6b7280">
-                        Proyek Berhasil
-                      </p>
-                      <p class="text-2xl font-bold" style="color: #065f46">
-                        28
-                      </p>
-                    </div>
-                    <div class="p-4 rounded-lg" style="background: #fef3c7">
-                      <p class="text-xs mb-1" style="color: #6b7280">
-                        Dalam Proses
-                      </p>
-                      <p class="text-2xl font-bold" style="color: #92400e">
-                        12
-                      </p>
-                    </div>
-                    <div class="p-4 rounded-lg" style="background: #fff7ed">
-                      <p class="text-xs mb-1" style="color: #6b7280">
-                        Total Investasi
-                      </p>
-                      <p class="text-2xl font-bold gold-accent">Rp 1.2 M</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="card mt-6">
-                  <h4 class="font-bold text-xl mb-4" style="color: #1b4332">
-                    Notifikasi
-                  </h4>
-                  <div class="space-y-3">
-                    <div
-                      class="flex items-start gap-3 p-3 rounded-lg"
-                      style="background: #fff7ed"
-                    >
-                      <span class="text-xl">💰</span>
-                      <div class="flex-1">
-                        <p class="font-medium text-sm" style="color: #92400e">
-                          Bagi Hasil Diterima
-                        </p>
-                        <p class="text-xs" style="color: #b45309">
-                          Rp 12.500.000 dari proyek Jagung
-                        </p>
-                        <p class="text-xs mt-1" style="color: #6b7280">
-                          1 jam lalu
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-start gap-3 p-3 rounded-lg"
-                      style="background: #f0fdf4"
-                    >
-                      <span class="text-xl">✅</span>
-                      <div class="flex-1">
-                        <p class="font-medium text-sm" style="color: #065f46">
-                          Proyek Selesai
-                        </p>
-                        <p class="text-xs" style="color: #047857">
-                          Cabai Merah berhasil dipanen
-                        </p>
-                        <p class="text-xs mt-1" style="color: #6b7280">
-                          3 jam lalu
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-start gap-3 p-3 rounded-lg"
-                      style="background: #dbeafe"
-                    >
-                      <span class="text-xl">📊</span>
-                      <div class="flex-1">
-                        <p class="font-medium text-sm" style="color: #1e40af">
-                          Laporan Mingguan
-                        </p>
-                        <p class="text-xs" style="color: #1d4ed8">
-                          Update dari 5 proyek aktif
-                        </p>
-                        <p class="text-xs mt-1" style="color: #6b7280">
-                          5 jam lalu
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Proyek Aktif Page -->
-          <div id="page-aktif" class="page-content hidden">
-            <h3 class="text-2xl font-bold mb-6" style="color: #1b4332">
-              Proyek Aktif
-            </h3>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 class="font-bold text-lg" style="color: #1b4332">
-                      Padi Organik Premium
-                    </h4>
-                    <p class="text-sm" style="color: #6b7280">
-                      Pak Suryanto - Karawang, Jawa Barat
-                    </p>
-                  </div>
-                  <span class="status-badge status-planting">Masa Tanam</span>
-                </div>
-                <div class="text-5xl mb-4">🌾</div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Dana Tertanam
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">
-                      Rp 50.000.000
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Estimasi ROI
-                    </p>
-                    <p class="font-bold gold-accent">18%</p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Status Tanaman
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">
-                      Pembungaan (75%)
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Estimasi Hasil
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">8.5 Ton</p>
-                  </div>
-                </div>
-                <div class="progress-bar mb-4">
+                <div class="progress-bar">
                   <div class="progress-fill" style="width: 75%"></div>
                 </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold"
-                  style="background: linear-gradient(135deg, #1b4332, #2d6a4f)"
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                    font-size: 13px;
+                    color: var(--text-gray);
+                  "
                 >
-                  Lihat Detail Proyek
-                </button>
+                  <span>Dana: Rp 80 Juta</span>
+                  <span>Estimasi Panen: 30 hari</span>
+                </div>
               </div>
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 class="font-bold text-lg" style="color: #1b4332">
-                      Cabai Merah Keriting
-                    </h4>
-                    <p class="text-sm" style="color: #6b7280">
-                      Bu Siti - Garut, Jawa Barat
-                    </p>
-                  </div>
-                  <span class="status-badge status-harvest">Panen</span>
-                </div>
-                <div class="text-5xl mb-4">🌶️</div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Dana Tertanam
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">
-                      Rp 35.000.000
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Estimasi ROI
-                    </p>
-                    <p class="font-bold gold-accent">25%</p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Status Tanaman
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">
-                      Siap Panen (90%)
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Estimasi Hasil
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">3.2 Ton</p>
-                  </div>
-                </div>
-                <div class="progress-bar mb-4">
-                  <div class="progress-fill" style="width: 90%"></div>
-                </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold"
-                  style="background: linear-gradient(135deg, #1b4332, #2d6a4f)"
+              <div style="margin-bottom: 24px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                  "
                 >
-                  Lihat Detail Proyek
-                </button>
+                  <span style="font-weight: 600; color: var(--dark-green)"
+                    >Proyek Jagung Manis - Bu Siti</span
+                  >
+                  <span style="color: #28a745">Siap Panen - 95%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 95%"></div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                    font-size: 13px;
+                    color: var(--text-gray);
+                  "
+                >
+                  <span>Dana: Rp 60 Juta</span>
+                  <span>Estimasi Panen: 7 hari</span>
+                </div>
               </div>
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 class="font-bold text-lg" style="color: #1b4332">
-                      Jagung Manis Hibrida
-                    </h4>
-                    <p class="text-sm" style="color: #6b7280">
-                      Pak Budi - Kediri, Jawa Timur
-                    </p>
-                  </div>
-                  <span class="status-badge status-ready">Siap Jual</span>
+              <div style="margin-bottom: 24px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <span style="font-weight: 600; color: var(--dark-green)"
+                    >Proyek Cabai Merah - Pak Budi</span
+                  >
+                  <span style="color: var(--text-gray)"
+                    >Dalam Masa Tanam - 60%</span
+                  >
                 </div>
-                <div class="text-5xl mb-4">🌽</div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Dana Tertanam
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">
-                      Rp 40.000.000
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      ROI Aktual
-                    </p>
-                    <p class="font-bold gold-accent">22%</p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Status Tanaman
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">
-                      Terjual (100%)
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Hasil Panen
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">6.8 Ton</p>
-                  </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 60%"></div>
                 </div>
-                <div class="progress-bar mb-4">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                    font-size: 13px;
+                    color: var(--text-gray);
+                  "
+                >
+                  <span>Dana: Rp 45 Juta</span>
+                  <span>Estimasi Panen: 45 hari</span>
+                </div>
+              </div>
+              <div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <span style="font-weight: 600; color: var(--dark-green)"
+                    >Proyek Sayuran Hidroponik - Pak Joko</span
+                  >
+                  <span style="color: #d4af37">Siap Jual - 100%</span>
+                </div>
+                <div class="progress-bar">
                   <div class="progress-fill" style="width: 100%"></div>
                 </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold"
-                  style="background: linear-gradient(135deg, #1b4332, #2d6a4f)"
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 8px;
+                    font-size: 13px;
+                    color: var(--text-gray);
+                  "
                 >
-                  Lihat Detail Proyek
-                </button>
-              </div>
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 class="font-bold text-lg" style="color: #1b4332">
-                      Sayuran Hidroponik
-                    </h4>
-                    <p class="text-sm" style="color: #6b7280">
-                      Pak Ahmad - Bandung, Jawa Barat
-                    </p>
-                  </div>
-                  <span class="status-badge status-planting">Masa Tanam</span>
+                  <span>Dana: Rp 35 Juta</span>
+                  <span>Profit: Rp 8.5 Juta (24%)</span>
                 </div>
-                <div class="text-5xl mb-4">🥬</div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Dana Tertanam
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">
-                      Rp 25.000.000
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Estimasi ROI
-                    </p>
-                    <p class="font-bold gold-accent">19%</p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Status Tanaman
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">
-                      Pertumbuhan (45%)
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs mb-1" style="color: #6b7280">
-                      Estimasi Hasil
-                    </p>
-                    <p class="font-bold" style="color: #1b4332">2.5 Ton</p>
-                  </div>
-                </div>
-                <div class="progress-bar mb-4">
-                  <div class="progress-fill" style="width: 45%"></div>
-                </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold"
-                  style="background: linear-gradient(135deg, #1b4332, #2d6a4f)"
-                >
-                  Lihat Detail Proyek
-                </button>
               </div>
             </div>
           </div>
-          <!-- Proyek Siap Didanai Page -->
-          <div id="page-peluang" class="page-content hidden">
-            <h3 class="text-2xl font-bold mb-6" style="color: #1b4332">
-              Proyek Siap Didanai
-            </h3>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="status-badge risk-low">Risiko Rendah</span>
-                  <span class="text-xs font-semibold gold-accent"
-                    >✓ Terverifikasi</span
-                  >
-                </div>
-                <div class="text-5xl mb-3">🌾</div>
-                <h4 class="font-bold text-lg mb-2" style="color: #1b4332">
-                  Padi Organik Sawah
-                </h4>
-                <p class="text-sm mb-4" style="color: #6b7280">
-                  Pak Joko - Subang, Jawa Barat
-                </p>
-                <div class="space-y-3 mb-4">
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Dana Dibutuhkan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332"
-                      >Rp 60 Jt</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Estimasi ROI</span
-                    >
-                    <span class="font-bold gold-accent">20%</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280">Durasi</span>
-                    <span class="font-bold" style="color: #1b4332"
-                      >4 Bulan</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Luas Lahan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332">3.5 Ha</span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="flex justify-between text-xs mb-1">
-                    <span style="color: #6b7280">Terdanai</span>
-                    <span class="font-bold" style="color: #1b4332">65%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 65%"></div>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold gold-bg"
-                  style="color: #1b4332"
-                >
-                  💎 Danai Sekarang
-                </button>
-              </div>
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="status-badge risk-medium">Risiko Sedang</span>
-                  <span class="text-xs font-semibold gold-accent"
-                    >✓ Terverifikasi</span
-                  >
-                </div>
-                <div class="text-5xl mb-3">🍅</div>
-                <h4 class="font-bold text-lg mb-2" style="color: #1b4332">
-                  Tomat Cherry Premium
-                </h4>
-                <p class="text-sm mb-4" style="color: #6b7280">
-                  Bu Ratna - Lembang, Jawa Barat
-                </p>
-                <div class="space-y-3 mb-4">
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Dana Dibutuhkan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332"
-                      >Rp 45 Jt</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Estimasi ROI</span
-                    >
-                    <span class="font-bold gold-accent">28%</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280">Durasi</span>
-                    <span class="font-bold" style="color: #1b4332"
-                      >3 Bulan</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Luas Lahan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332">1.2 Ha</span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="flex justify-between text-xs mb-1">
-                    <span style="color: #6b7280">Terdanai</span>
-                    <span class="font-bold" style="color: #1b4332">40%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 40%"></div>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold gold-bg"
-                  style="color: #1b4332"
-                >
-                  💎 Danai Sekarang
-                </button>
-              </div>
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="status-badge risk-low">Risiko Rendah</span>
-                  <span class="text-xs font-semibold gold-accent"
-                    >✓ Terverifikasi</span
-                  >
-                </div>
-                <div class="text-5xl mb-3">🥕</div>
-                <h4 class="font-bold text-lg mb-2" style="color: #1b4332">
-                  Wortel Organik
-                </h4>
-                <p class="text-sm mb-4" style="color: #6b7280">
-                  Pak Dedi - Dieng, Jawa Tengah
-                </p>
-                <div class="space-y-3 mb-4">
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Dana Dibutuhkan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332"
-                      >Rp 30 Jt</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Estimasi ROI</span
-                    >
-                    <span class="font-bold gold-accent">22%</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280">Durasi</span>
-                    <span class="font-bold" style="color: #1b4332"
-                      >3.5 Bulan</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Luas Lahan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332">2.0 Ha</span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="flex justify-between text-xs mb-1">
-                    <span style="color: #6b7280">Terdanai</span>
-                    <span class="font-bold" style="color: #1b4332">80%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 80%"></div>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold gold-bg"
-                  style="color: #1b4332"
-                >
-                  💎 Danai Sekarang
-                </button>
-              </div>
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="status-badge risk-medium">Risiko Sedang</span>
-                  <span class="text-xs font-semibold gold-accent"
-                    >✓ Terverifikasi</span
-                  >
-                </div>
-                <div class="text-5xl mb-3">🌶️</div>
-                <h4 class="font-bold text-lg mb-2" style="color: #1b4332">
-                  Cabai Rawit Super
-                </h4>
-                <p class="text-sm mb-4" style="color: #6b7280">
-                  Bu Ani - Brebes, Jawa Tengah
-                </p>
-                <div class="space-y-3 mb-4">
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Dana Dibutuhkan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332"
-                      >Rp 38 Jt</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Estimasi ROI</span
-                    >
-                    <span class="font-bold gold-accent">26%</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280">Durasi</span>
-                    <span class="font-bold" style="color: #1b4332"
-                      >4 Bulan</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Luas Lahan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332">1.5 Ha</span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="flex justify-between text-xs mb-1">
-                    <span style="color: #6b7280">Terdanai</span>
-                    <span class="font-bold" style="color: #1b4332">25%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 25%"></div>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold gold-bg"
-                  style="color: #1b4332"
-                >
-                  💎 Danai Sekarang
-                </button>
-              </div>
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="status-badge risk-low">Risiko Rendah</span>
-                  <span class="text-xs font-semibold gold-accent"
-                    >✓ Terverifikasi</span
-                  >
-                </div>
-                <div class="text-5xl mb-3">🌽</div>
-                <h4 class="font-bold text-lg mb-2" style="color: #1b4332">
-                  Jagung Pipilan Kering
-                </h4>
-                <p class="text-sm mb-4" style="color: #6b7280">
-                  Pak Hadi - Blitar, Jawa Timur
-                </p>
-                <div class="space-y-3 mb-4">
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Dana Dibutuhkan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332"
-                      >Rp 55 Jt</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Estimasi ROI</span
-                    >
-                    <span class="font-bold gold-accent">21%</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280">Durasi</span>
-                    <span class="font-bold" style="color: #1b4332"
-                      >3.5 Bulan</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Luas Lahan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332">4.0 Ha</span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="flex justify-between text-xs mb-1">
-                    <span style="color: #6b7280">Terdanai</span>
-                    <span class="font-bold" style="color: #1b4332">55%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 55%"></div>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold gold-bg"
-                  style="color: #1b4332"
-                >
-                  💎 Danai Sekarang
-                </button>
-              </div>
-              <div class="card project-card">
-                <div class="flex justify-between items-start mb-3">
-                  <span class="status-badge risk-high">Risiko Tinggi</span>
-                  <span class="text-xs font-semibold gold-accent"
-                    >✓ Terverifikasi</span
-                  >
-                </div>
-                <div class="text-5xl mb-3">🍓</div>
-                <h4 class="font-bold text-lg mb-2" style="color: #1b4332">
-                  Strawberry Premium
-                </h4>
-                <p class="text-sm mb-4" style="color: #6b7280">
-                  Bu Rina - Ciwidey, Jawa Barat
-                </p>
-                <div class="space-y-3 mb-4">
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Dana Dibutuhkan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332"
-                      >Rp 70 Jt</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Estimasi ROI</span
-                    >
-                    <span class="font-bold gold-accent">35%</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280">Durasi</span>
-                    <span class="font-bold" style="color: #1b4332"
-                      >5 Bulan</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-sm" style="color: #6b7280"
-                      >Luas Lahan</span
-                    >
-                    <span class="font-bold" style="color: #1b4332">0.8 Ha</span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="flex justify-between text-xs mb-1">
-                    <span style="color: #6b7280">Terdanai</span>
-                    <span class="font-bold" style="color: #1b4332">15%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 15%"></div>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 rounded-lg text-white font-semibold gold-bg"
-                  style="color: #1b4332"
-                >
-                  💎 Danai Sekarang
-                </button>
-              </div>
+          <!-- Active Projects Page -->
+          <div class="page-section" id="active-projects">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 28px;
+              "
+            >
+              <h2 style="color: var(--dark-green); margin: 0; font-size: 28px">
+                Proyek Aktif
+              </h2>
+              <button class="btn btn-secondary">Filter Proyek</button>
             </div>
-          </div>
-          <!-- Keuangan Page -->
-          <div id="page-keuangan" class="page-content hidden">
-            <h3 class="text-2xl font-bold mb-6" style="color: #1b4332">
-              Laporan Keuangan
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div class="card">
-                <p class="text-sm mb-2" style="color: #6b7280">
-                  Total Modal Investasi
-                </p>
-                <p class="text-3xl font-bold" style="color: #1b4332">
-                  Rp 1.2 M
-                </p>
-                <p class="text-xs mt-2 gold-accent">↑ 15% dari tahun lalu</p>
-              </div>
-              <div class="card">
-                <p class="text-sm mb-2" style="color: #6b7280">
-                  Total Profit Diterima
-                </p>
-                <p class="text-3xl font-bold" style="color: #2d6a4f">
-                  Rp 285 Jt
-                </p>
-                <p class="text-xs mt-2 gold-accent">↑ 22% dari tahun lalu</p>
-              </div>
-              <div class="card">
-                <p class="text-sm mb-2" style="color: #6b7280">ROI Rata-rata</p>
-                <p class="text-3xl font-bold gold-accent">23.75%</p>
-                <p class="text-xs mt-2" style="color: #6b7280">
-                  Dari 28 proyek selesai
-                </p>
-              </div>
-            </div>
-            <div class="card mb-6">
-              <h4 class="font-bold text-xl mb-6" style="color: #1b4332">
-                Grafik Modal vs Profit
-              </h4>
-              <div
-                class="flex items-end justify-around gap-6 px-4"
-                style="height: 300px"
-              >
-                <div class="flex flex-col items-center gap-3 flex-1">
-                  <div
-                    class="w-full rounded-t-lg"
-                    style="background: #e5e7eb; height: 50%"
-                  ></div>
-                  <span class="text-xs font-medium" style="color: #6b7280"
-                    >Q1 2023</span
+            <div class="project-grid">
+              <div class="project-card">
+                <div class="project-image">
+                  🌾
+                  <div class="project-badge">Aktif</div>
+                </div>
+                <div class="project-info">
+                  <h3>Padi Organik Premium</h3>
+                  <div class="project-meta">
+                    <span>👨‍🌾</span> <span>Pak Suryanto</span>
+                  </div>
+                  <div class="project-meta">
+                    <span>📍</span> <span>Karawang, Jawa Barat</span>
+                  </div>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Dana Tertanam</span>
+                      <span class="info-value">Rp 80 Jt</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Estimasi ROI</span>
+                      <span class="info-value">16%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Status</span>
+                      <span class="info-value">75%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Panen</span>
+                      <span class="info-value">30 hari</span>
+                    </div>
+                  </div>
+                  <span class="status-badge status-active"
+                    >Dalam Masa Tanam</span
                   >
-                  <div class="text-center">
-                    <p class="text-xs" style="color: #6b7280">Modal: 180M</p>
-                    <p class="text-xs gold-accent">Profit: 38M</p>
+                  <button
+                    class="btn btn-outline"
+                    style="width: 100%; margin-top: 16px"
+                  >
+                    Lihat Detail
+                  </button>
+                </div>
+              </div>
+              <div class="project-card">
+                <div class="project-image">
+                  🌽
+                  <div
+                    class="project-badge"
+                    style="background-color: #28a745; color: white"
+                  >
+                    Panen
                   </div>
                 </div>
-                <div class="flex flex-col items-center gap-3 flex-1">
-                  <div
-                    class="w-full rounded-t-lg"
-                    style="background: #e5e7eb; height: 65%"
-                  ></div>
-                  <span class="text-xs font-medium" style="color: #6b7280"
-                    >Q2 2023</span
-                  >
-                  <div class="text-center">
-                    <p class="text-xs" style="color: #6b7280">Modal: 240M</p>
-                    <p class="text-xs gold-accent">Profit: 52M</p>
+                <div class="project-info">
+                  <h3>Jagung Manis Hibrida</h3>
+                  <div class="project-meta">
+                    <span>👩‍🌾</span> <span>Bu Siti Aminah</span>
                   </div>
-                </div>
-                <div class="flex flex-col items-center gap-3 flex-1">
-                  <div
-                    class="w-full rounded-t-lg"
-                    style="background: #e5e7eb; height: 80%"
-                  ></div>
-                  <span class="text-xs font-medium" style="color: #6b7280"
-                    >Q3 2023</span
-                  >
-                  <div class="text-center">
-                    <p class="text-xs" style="color: #6b7280">Modal: 320M</p>
-                    <p class="text-xs gold-accent">Profit: 71M</p>
+                  <div class="project-meta">
+                    <span>📍</span> <span>Malang, Jawa Timur</span>
                   </div>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Dana Tertanam</span>
+                      <span class="info-value">Rp 60 Jt</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Estimasi ROI</span>
+                      <span class="info-value">18%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Status</span>
+                      <span class="info-value">95%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Panen</span>
+                      <span class="info-value">7 hari</span>
+                    </div>
+                  </div>
+                  <span class="status-badge status-harvest">Siap Panen</span>
+                  <button
+                    class="btn btn-outline"
+                    style="width: 100%; margin-top: 16px"
+                  >
+                    Lihat Detail
+                  </button>
                 </div>
-                <div class="flex flex-col items-center gap-3 flex-1">
+              </div>
+              <div class="project-card">
+                <div class="project-image">
+                  🌶️
+                  <div class="project-badge">Aktif</div>
+                </div>
+                <div class="project-info">
+                  <h3>Cabai Merah Keriting</h3>
+                  <div class="project-meta">
+                    <span>👨‍🌾</span> <span>Pak Budi Santoso</span>
+                  </div>
+                  <div class="project-meta">
+                    <span>📍</span> <span>Garut, Jawa Barat</span>
+                  </div>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Dana Tertanam</span>
+                      <span class="info-value">Rp 45 Jt</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Estimasi ROI</span>
+                      <span class="info-value">22%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Status</span>
+                      <span class="info-value">60%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Panen</span>
+                      <span class="info-value">45 hari</span>
+                    </div>
+                  </div>
+                  <span class="status-badge status-active"
+                    >Dalam Masa Tanam</span
+                  >
+                  <button
+                    class="btn btn-outline"
+                    style="width: 100%; margin-top: 16px"
+                  >
+                    Lihat Detail
+                  </button>
+                </div>
+              </div>
+              <div class="project-card">
+                <div class="project-image">
+                  🥬
                   <div
-                    class="w-full rounded-t-lg"
+                    class="project-badge"
                     style="
-                      background: linear-gradient(180deg, #d4af37, #b8941f);
-                      height: 100%;
+                      background-color: var(--gold);
+                      color: var(--dark-green);
                     "
-                  ></div>
+                  >
+                    Selesai
+                  </div>
+                </div>
+                <div class="project-info">
+                  <h3>Sayuran Hidroponik</h3>
+                  <div class="project-meta">
+                    <span>👨‍🌾</span> <span>Pak Joko Widodo</span>
+                  </div>
+                  <div class="project-meta">
+                    <span>📍</span> <span>Bandung, Jawa Barat</span>
+                  </div>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Dana Tertanam</span>
+                      <span class="info-value">Rp 35 Jt</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">ROI Aktual</span>
+                      <span class="info-value" style="color: #28a745">24%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Status</span>
+                      <span class="info-value">100%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Profit</span>
+                      <span class="info-value" style="color: #28a745"
+                        >Rp 8.5 Jt</span
+                      >
+                    </div>
+                  </div>
                   <span
-                    class="text-xs font-medium font-bold"
-                    style="color: #1b4332"
-                    >Q4 2023</span
+                    class="status-badge"
+                    style="
+                      background-color: var(--light-gold);
+                      color: var(--dark-green);
+                    "
+                    >Siap Jual</span
                   >
-                  <div class="text-center">
-                    <p class="text-xs font-bold" style="color: #1b4332">
-                      Modal: 450M
-                    </p>
-                    <p class="text-xs font-bold gold-accent">Profit: 124M</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div class="card">
-                <h4 class="font-bold text-xl mb-4" style="color: #1b4332">
-                  Bagi Hasil per Proyek
-                </h4>
-                <div class="space-y-4">
-                  <div
-                    class="flex justify-between items-center pb-3 border-b"
-                    style="border-color: #e5e7eb"
+                  <button
+                    class="btn btn-outline"
+                    style="width: 100%; margin-top: 16px"
                   >
-                    <div>
-                      <p class="font-semibold" style="color: #1b4332">
-                        Jagung Manis - Pak Budi
-                      </p>
-                      <p class="text-xs" style="color: #6b7280">
-                        Selesai 15 Jan 2024
-                      </p>
-                    </div>
-                    <div class="text-right">
-                      <p class="font-bold gold-accent">Rp 12.5 Jt</p>
-                      <p class="text-xs" style="color: #6b7280">ROI: 22%</p>
-                    </div>
-                  </div>
-                  <div
-                    class="flex justify-between items-center pb-3 border-b"
-                    style="border-color: #e5e7eb"
-                  >
-                    <div>
-                      <p class="font-semibold" style="color: #1b4332">
-                        Cabai Merah - Bu Siti
-                      </p>
-                      <p class="text-xs" style="color: #6b7280">
-                        Selesai 10 Jan 2024
-                      </p>
-                    </div>
-                    <div class="text-right">
-                      <p class="font-bold gold-accent">Rp 8.75 Jt</p>
-                      <p class="text-xs" style="color: #6b7280">ROI: 25%</p>
-                    </div>
-                  </div>
-                  <div
-                    class="flex justify-between items-center pb-3 border-b"
-                    style="border-color: #e5e7eb"
-                  >
-                    <div>
-                      <p class="font-semibold" style="color: #1b4332">
-                        Padi Organik - Pak Joko
-                      </p>
-                      <p class="text-xs" style="color: #6b7280">
-                        Selesai 28 Des 2023
-                      </p>
-                    </div>
-                    <div class="text-right">
-                      <p class="font-bold gold-accent">Rp 10.2 Jt</p>
-                      <p class="text-xs" style="color: #6b7280">ROI: 18%</p>
-                    </div>
-                  </div>
-                  <div class="flex justify-between items-center">
-                    <div>
-                      <p class="font-semibold" style="color: #1b4332">
-                        Sayuran - Pak Ahmad
-                      </p>
-                      <p class="text-xs" style="color: #6b7280">
-                        Selesai 20 Des 2023
-                      </p>
-                    </div>
-                    <div class="text-right">
-                      <p class="font-bold gold-accent">Rp 5.8 Jt</p>
-                      <p class="text-xs" style="color: #6b7280">ROI: 19%</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card">
-                <h4 class="font-bold text-xl mb-4" style="color: #1b4332">
-                  Riwayat Transaksi
-                </h4>
-                <div class="space-y-3">
-                  <div
-                    class="flex items-start gap-3 p-3 rounded-lg"
-                    style="background: #fff7ed"
-                  >
-                    <span class="text-xl">💰</span>
-                    <div class="flex-1">
-                      <p class="font-medium text-sm" style="color: #92400e">
-                        Bagi Hasil Diterima
-                      </p>
-                      <p class="text-xs" style="color: #b45309">
-                        Proyek Jagung Manis
-                      </p>
-                      <p class="text-xs mt-1" style="color: #6b7280">
-                        15 Jan 2024
-                      </p>
-                    </div>
-                    <p class="font-bold gold-accent">+12.5 Jt</p>
-                  </div>
-                  <div
-                    class="flex items-start gap-3 p-3 rounded-lg"
-                    style="background: #f0fdf4"
-                  >
-                    <span class="text-xl">📤</span>
-                    <div class="flex-1">
-                      <p class="font-medium text-sm" style="color: #065f46">
-                        Investasi Baru
-                      </p>
-                      <p class="text-xs" style="color: #047857">
-                        Proyek Tomat Cherry
-                      </p>
-                      <p class="text-xs mt-1" style="color: #6b7280">
-                        12 Jan 2024
-                      </p>
-                    </div>
-                    <p class="font-bold" style="color: #ef4444">-45 Jt</p>
-                  </div>
-                  <div
-                    class="flex items-start gap-3 p-3 rounded-lg"
-                    style="background: #fff7ed"
-                  >
-                    <span class="text-xl">💰</span>
-                    <div class="flex-1">
-                      <p class="font-medium text-sm" style="color: #92400e">
-                        Bagi Hasil Diterima
-                      </p>
-                      <p class="text-xs" style="color: #b45309">
-                        Proyek Cabai Merah
-                      </p>
-                      <p class="text-xs mt-1" style="color: #6b7280">
-                        10 Jan 2024
-                      </p>
-                    </div>
-                    <p class="font-bold gold-accent">+8.75 Jt</p>
-                  </div>
-                  <div
-                    class="flex items-start gap-3 p-3 rounded-lg"
-                    style="background: #f0fdf4"
-                  >
-                    <span class="text-xl">📤</span>
-                    <div class="flex-1">
-                      <p class="font-medium text-sm" style="color: #065f46">
-                        Investasi Baru
-                      </p>
-                      <p class="text-xs" style="color: #047857">
-                        Proyek Padi Organik
-                      </p>
-                      <p class="text-xs mt-1" style="color: #6b7280">
-                        05 Jan 2024
-                      </p>
-                    </div>
-                    <p class="font-bold" style="color: #ef4444">-50 Jt</p>
-                  </div>
+                    Lihat Detail
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-          <!-- Analisis Pasar Page -->
-          <div id="page-analisis" class="page-content hidden">
-            <h3 class="text-2xl font-bold mb-6" style="color: #1b4332">
-              Analisis Pasar
-            </h3>
-            <div class="card mb-6">
-              <h4 class="font-bold text-xl mb-6" style="color: #1b4332">
-                Tren Harga Komoditas (per Kg)
-              </h4>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Funding Opportunities Page -->
+          <div class="page-section" id="funding-opportunities">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 28px;
+              "
+            >
+              <h2 style="color: var(--dark-green); margin: 0; font-size: 28px">
+                Proyek Siap Didanai
+              </h2>
+              <button class="btn btn-secondary">Filter Kategori</button>
+            </div>
+            <div class="project-grid">
+              <div class="project-card">
                 <div
-                  class="p-4 rounded-lg"
-                  style="background: #f0fdf4; border: 2px solid #d1fae5"
+                  class="project-image"
+                  style="background: linear-gradient(135deg, #40916c, #2d6a4f)"
                 >
-                  <div class="flex items-center justify-between mb-3">
-                    <span class="text-3xl">🌾</span>
-                    <span class="text-xs font-semibold" style="color: #065f46"
-                      >↑ 8%</span
-                    >
+                  🌾
+                  <div
+                    class="project-badge"
+                    style="background-color: #1e40af; color: white"
+                  >
+                    Baru
                   </div>
-                  <p class="font-bold text-lg" style="color: #1b4332">Padi</p>
-                  <p class="text-2xl font-bold gold-accent">Rp 8.500</p>
-                  <p class="text-xs mt-2" style="color: #6b7280">
-                    Harga stabil, permintaan tinggi
-                  </p>
                 </div>
-                <div
-                  class="p-4 rounded-lg"
-                  style="background: #fff7ed; border: 2px solid #fed7aa"
-                >
-                  <div class="flex items-center justify-between mb-3">
-                    <span class="text-3xl">🌽</span>
-                    <span class="text-xs font-semibold" style="color: #92400e"
-                      >↑ 12%</span
-                    >
+                <div class="project-info">
+                  <h3>Padi Organik Musim 2</h3>
+                  <div class="project-meta">
+                    <span>👨‍🌾</span> <span>Pak Ahmad Dahlan</span>
                   </div>
-                  <p class="font-bold text-lg" style="color: #1b4332">Jagung</p>
-                  <p class="text-2xl font-bold gold-accent">Rp 6.200</p>
-                  <p class="text-xs mt-2" style="color: #6b7280">
-                    Tren naik, musim panen
-                  </p>
-                </div>
-                <div
-                  class="p-4 rounded-lg"
-                  style="background: #fee2e2; border: 2px solid #fecaca"
-                >
-                  <div class="flex items-center justify-between mb-3">
-                    <span class="text-3xl">🌶️</span>
-                    <span class="text-xs font-semibold" style="color: #991b1b"
-                      >↑ 25%</span
-                    >
+                  <div class="project-meta">
+                    <span>📍</span> <span>Subang, Jawa Barat</span>
                   </div>
-                  <p class="font-bold text-lg" style="color: #1b4332">Cabai</p>
-                  <p class="text-2xl font-bold gold-accent">Rp 45.000</p>
-                  <p class="text-xs mt-2" style="color: #6b7280">
-                    Harga tinggi, pasokan terbatas
-                  </p>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Dana Dibutuhkan</span>
+                      <span class="info-value">Rp 95 Jt</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Estimasi ROI</span>
+                      <span class="info-value" style="color: #28a745">17%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Risiko</span>
+                      <span class="info-value" style="color: #28a745"
+                        >Rendah</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Durasi</span>
+                      <span class="info-value">4 bulan</span>
+                    </div>
+                  </div>
+                  <div style="margin: 16px 0">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 8px;
+                        font-size: 13px;
+                      "
+                    >
+                      <span style="color: var(--text-gray)">Terkumpul</span>
+                      <span style="font-weight: 700; color: var(--dark-green)"
+                        >Rp 45 Jt (47%)</span
+                      >
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 47%"></div>
+                    </div>
+                  </div>
+                  <span class="status-badge status-ready">Terverifikasi</span>
+                  <button
+                    class="btn btn-primary"
+                    style="width: 100%; margin-top: 16px"
+                  >
+                    💰 Danai Sekarang
+                  </button>
                 </div>
               </div>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div class="card">
-                <h4 class="font-bold text-xl mb-4" style="color: #1b4332">
-                  Tingkat Keberhasilan per Wilayah
-                </h4>
-                <div class="space-y-4">
-                  <div>
-                    <div class="flex justify-between mb-2">
-                      <span class="font-medium">Jawa Barat</span>
-                      <span class="font-bold gold-accent">92%</span>
+              <div class="project-card">
+                <div
+                  class="project-image"
+                  style="background: linear-gradient(135deg, #52b788, #40916c)"
+                >
+                  🍅
+                  <div
+                    class="project-badge"
+                    style="background-color: #1e40af; color: white"
+                  >
+                    Baru
+                  </div>
+                </div>
+                <div class="project-info">
+                  <h3>Tomat Cherry Premium</h3>
+                  <div class="project-meta">
+                    <span>👩‍🌾</span> <span>Bu Ratna Sari</span>
+                  </div>
+                  <div class="project-meta">
+                    <span>📍</span> <span>Lembang, Jawa Barat</span>
+                  </div>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Dana Dibutuhkan</span>
+                      <span class="info-value">Rp 55 Jt</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Estimasi ROI</span>
+                      <span class="info-value" style="color: #28a745">20%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Risiko</span>
+                      <span class="info-value" style="color: #ffc107"
+                        >Sedang</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Durasi</span>
+                      <span class="info-value">3 bulan</span>
+                    </div>
+                  </div>
+                  <div style="margin: 16px 0">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 8px;
+                        font-size: 13px;
+                      "
+                    >
+                      <span style="color: var(--text-gray)">Terkumpul</span>
+                      <span style="font-weight: 700; color: var(--dark-green)"
+                        >Rp 38 Jt (69%)</span
+                      >
                     </div>
                     <div class="progress-bar">
-                      <div class="progress-fill" style="width: 92%"></div>
+                      <div class="progress-fill" style="width: 69%"></div>
                     </div>
-                    <p class="text-xs mt-1" style="color: #6b7280">
-                      18 proyek berhasil dari 20 proyek
-                    </p>
                   </div>
-                  <div>
-                    <div class="flex justify-between mb-2">
-                      <span class="font-medium">Jawa Tengah</span>
-                      <span class="font-bold gold-accent">88%</span>
-                    </div>
-                    <div class="progress-bar">
-                      <div class="progress-fill" style="width: 88%"></div>
-                    </div>
-                    <p class="text-xs mt-1" style="color: #6b7280">
-                      15 proyek berhasil dari 17 proyek
-                    </p>
+                  <span class="status-badge status-ready">Terverifikasi</span>
+                  <button
+                    class="btn btn-primary"
+                    style="width: 100%; margin-top: 16px"
+                  >
+                    💰 Danai Sekarang
+                  </button>
+                </div>
+              </div>
+              <div class="project-card">
+                <div
+                  class="project-image"
+                  style="background: linear-gradient(135deg, #74c69d, #52b788)"
+                >
+                  🥒
+                  <div
+                    class="project-badge"
+                    style="background-color: #dc3545; color: white"
+                  >
+                    Hot
                   </div>
-                  <div>
-                    <div class="flex justify-between mb-2">
-                      <span class="font-medium">Jawa Timur</span>
-                      <span class="font-bold gold-accent">85%</span>
-                    </div>
-                    <div class="progress-bar">
-                      <div class="progress-fill" style="width: 85%"></div>
-                    </div>
-                    <p class="text-xs mt-1" style="color: #6b7280">
-                      12 proyek berhasil dari 14 proyek
-                    </p>
+                </div>
+                <div class="project-info">
+                  <h3>Timun Jepang Organik</h3>
+                  <div class="project-meta">
+                    <span>👨‍🌾</span> <span>Pak Hendra Gunawan</span>
                   </div>
-                  <div>
-                    <div class="flex justify-between mb-2">
-                      <span class="font-medium">Sumatera</span>
-                      <span class="font-bold gold-accent">80%</span>
+                  <div class="project-meta">
+                    <span>📍</span> <span>Cianjur, Jawa Barat</span>
+                  </div>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Dana Dibutuhkan</span>
+                      <span class="info-value">Rp 40 Jt</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Estimasi ROI</span>
+                      <span class="info-value" style="color: #28a745">25%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Risiko</span>
+                      <span class="info-value" style="color: #28a745"
+                        >Rendah</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Durasi</span>
+                      <span class="info-value">2.5 bulan</span>
+                    </div>
+                  </div>
+                  <div style="margin: 16px 0">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 8px;
+                        font-size: 13px;
+                      "
+                    >
+                      <span style="color: var(--text-gray)">Terkumpul</span>
+                      <span style="font-weight: 700; color: var(--dark-green)"
+                        >Rp 32 Jt (80%)</span
+                      >
                     </div>
                     <div class="progress-bar">
                       <div class="progress-fill" style="width: 80%"></div>
                     </div>
-                    <p class="text-xs mt-1" style="color: #6b7280">
-                      8 proyek berhasil dari 10 proyek
-                    </p>
                   </div>
+                  <span class="status-badge status-ready">Terverifikasi</span>
+                  <button
+                    class="btn btn-primary"
+                    style="width: 100%; margin-top: 16px"
+                  >
+                    💰 Danai Sekarang
+                  </button>
                 </div>
               </div>
-              <div class="card">
-                <h4 class="font-bold text-xl mb-4" style="color: #1b4332">
-                  Rekomendasi Investasi
-                </h4>
-                <div class="space-y-3">
+              <div class="project-card">
+                <div
+                  class="project-image"
+                  style="background: linear-gradient(135deg, #95d5b2, #74c69d)"
+                >
+                  🍓
                   <div
-                    class="p-4 rounded-lg"
-                    style="background: #f0fdf4; border-left: 4px solid #2d6a4f"
+                    class="project-badge"
+                    style="background-color: #1e40af; color: white"
                   >
-                    <div class="flex items-start gap-3">
-                      <span class="text-2xl">⭐</span>
-                      <div>
-                        <p class="font-bold mb-1" style="color: #1b4332">
-                          Cabai Premium
-                        </p>
-                        <p class="text-sm" style="color: #6b7280">
-                          Harga pasar sedang tinggi, ROI potensial 25-30%.
-                          Risiko sedang.
-                        </p>
-                      </div>
+                    Baru
+                  </div>
+                </div>
+                <div class="project-info">
+                  <h3>Strawberry Hidroponik</h3>
+                  <div class="project-meta">
+                    <span>👩‍🌾</span> <span>Bu Dewi Lestari</span>
+                  </div>
+                  <div class="project-meta">
+                    <span>📍</span> <span>Batu, Jawa Timur</span>
+                  </div>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">Dana Dibutuhkan</span>
+                      <span class="info-value">Rp 70 Jt</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Estimasi ROI</span>
+                      <span class="info-value" style="color: #28a745">28%</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Risiko</span>
+                      <span class="info-value" style="color: #ffc107"
+                        >Sedang</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Durasi</span>
+                      <span class="info-value">5 bulan</span>
                     </div>
                   </div>
-                  <div
-                    class="p-4 rounded-lg"
-                    style="background: #fff7ed; border-left: 4px solid #d4af37"
-                  >
-                    <div class="flex items-start gap-3">
-                      <span class="text-2xl">💡</span>
-                      <div>
-                        <p class="font-bold mb-1" style="color: #1b4332">
-                          Padi Organik
-                        </p>
-                        <p class="text-sm" style="color: #6b7280">
-                          Permintaan stabil, ROI konsisten 18-20%. Risiko
-                          rendah.
-                        </p>
-                      </div>
+                  <div style="margin: 16px 0">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 8px;
+                        font-size: 13px;
+                      "
+                    >
+                      <span style="color: var(--text-gray)">Terkumpul</span>
+                      <span style="font-weight: 700; color: var(--dark-green)"
+                        >Rp 21 Jt (30%)</span
+                      >
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 30%"></div>
                     </div>
                   </div>
-                  <div
-                    class="p-4 rounded-lg"
-                    style="background: #dbeafe; border-left: 4px solid #1e40af"
+                  <span class="status-badge status-ready">Terverifikasi</span>
+                  <button
+                    class="btn btn-primary"
+                    style="width: 100%; margin-top: 16px"
                   >
-                    <div class="flex items-start gap-3">
-                      <span class="text-2xl">📊</span>
-                      <div>
-                        <p class="font-bold mb-1" style="color: #1b4332">
-                          Sayuran Hidroponik
-                        </p>
-                        <p class="text-sm" style="color: #6b7280">
-                          Tren meningkat di perkotaan, ROI 19-22%. Risiko
-                          rendah.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                    💰 Danai Sekarang
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-          <!-- Komunikasi Page -->
-          <div id="page-komunikasi" class="page-content hidden">
-            <h3 class="text-2xl font-bold mb-6" style="color: #1b4332">
-              Komunikasi
-            </h3>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div class="lg:col-span-1">
-                <div class="card">
-                  <h4 class="font-bold text-lg mb-4" style="color: #1b4332">
-                    Kontak Petani
-                  </h4>
-                  <div class="space-y-3">
-                    <div
-                      class="flex items-center gap-3 p-3 rounded-lg cursor-pointer"
-                      style="background: #f0fdf4"
-                    >
-                      <div
-                        class="w-12 h-12 rounded-full flex items-center justify-center text-xl"
-                        style="background: #2d6a4f; color: white"
-                      >
-                        👨‍🌾
-                      </div>
-                      <div class="flex-1">
-                        <p class="font-medium text-sm">Pak Suryanto</p>
-                        <p class="text-xs" style="color: #6b7280">
-                          Proyek Padi Organik
-                        </p>
-                      </div>
-                      <div
-                        class="notification-badge"
-                        style="position: relative; top: 0; right: 0"
-                      >
-                        1
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50"
-                    >
-                      <div
-                        class="w-12 h-12 rounded-full flex items-center justify-center text-xl"
-                        style="background: #1b4332; color: white"
-                      >
-                        👩‍🌾
-                      </div>
-                      <div class="flex-1">
-                        <p class="font-medium text-sm">Bu Siti</p>
-                        <p class="text-xs" style="color: #6b7280">
-                          Proyek Cabai Merah
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50"
-                    >
-                      <div
-                        class="w-12 h-12 rounded-full flex items-center justify-center text-xl"
-                        style="background: #2d6a4f; color: white"
-                      >
-                        👨‍🌾
-                      </div>
-                      <div class="flex-1">
-                        <p class="font-medium text-sm">Pak Budi</p>
-                        <p class="text-xs" style="color: #6b7280">
-                          Proyek Jagung Manis
-                        </p>
-                      </div>
-                    </div>
+          <!-- Finance Page -->
+          <div class="page-section" id="finance">
+            <h2
+              style="
+                color: var(--dark-green);
+                margin-bottom: 28px;
+                font-size: 28px;
+              "
+            >
+              Laporan Keuangan
+            </h2>
+            <!-- Financial Summary -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3>Total Modal Investasi</h3>
+                <p class="value">Rp 850 Jt</p>
+                <p class="subtext">
+                  <span>💼</span> <span>12 proyek aktif</span>
+                </p>
+              </div>
+              <div class="stat-card">
+                <h3>Total Profit Terealisasi</h3>
+                <p class="value">Rp 127 Jt</p>
+                <p class="subtext"><span>📈</span> <span>ROI 14.9%</span></p>
+              </div>
+              <div class="stat-card">
+                <h3>Profit Bulan Ini</h3>
+                <p class="value">Rp 28 Jt</p>
+                <p class="subtext">
+                  <span>↗</span> <span>+15% dari bulan lalu</span>
+                </p>
+              </div>
+            </div>
+            <!-- Modal vs Profit Chart -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Grafik Total Modal vs Profit</h2>
+              </div>
+              <div
+                style="
+                  height: 320px;
+                  display: flex;
+                  align-items: flex-end;
+                  gap: 40px;
+                  padding: 24px;
+                "
+              >
+                <div
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                  "
+                >
+                  <div
+                    style="
+                      width: 100%;
+                      background: linear-gradient(
+                        to top,
+                        var(--dark-green),
+                        var(--medium-green)
+                      );
+                      height: 85%;
+                      border-radius: 12px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: white;
+                      font-weight: 700;
+                      font-size: 18px;
+                    "
+                  >
+                    Rp 850 Jt
+                  </div>
+                  <div
+                    style="
+                      margin-top: 16px;
+                      font-weight: 600;
+                      color: var(--dark-green);
+                    "
+                  >
+                    Total Modal
                   </div>
                 </div>
-                <div class="card mt-6">
-                  <h4 class="font-bold text-lg mb-4" style="color: #1b4332">
-                    Forum Investor
-                  </h4>
-                  <div class="space-y-3">
-                    <div
-                      class="p-3 rounded-lg cursor-pointer"
-                      style="background: #fff7ed"
-                    >
-                      <p
-                        class="font-medium text-sm mb-1"
-                        style="color: #1b4332"
-                      >
-                        💬 Diskusi Umum
-                      </p>
-                      <p class="text-xs" style="color: #6b7280">
-                        128 investor aktif
-                      </p>
-                    </div>
-                    <div class="p-3 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <p
-                        class="font-medium text-sm mb-1"
-                        style="color: #1b4332"
-                      >
-                        📊 Analisis Pasar
-                      </p>
-                      <p class="text-xs" style="color: #6b7280">
-                        85 investor aktif
-                      </p>
-                    </div>
-                    <div class="p-3 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <p
-                        class="font-medium text-sm mb-1"
-                        style="color: #1b4332"
-                      >
-                        💡 Tips &amp; Strategi
-                      </p>
-                      <p class="text-xs" style="color: #6b7280">
-                        92 investor aktif
-                      </p>
-                    </div>
+                <div
+                  style="
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                  "
+                >
+                  <div
+                    style="
+                      width: 100%;
+                      background: linear-gradient(to top, var(--gold), #f4e4c1);
+                      height: 45%;
+                      border-radius: 12px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: var(--dark-green);
+                      font-weight: 700;
+                      font-size: 18px;
+                    "
+                  >
+                    Rp 127 Jt
+                  </div>
+                  <div
+                    style="
+                      margin-top: 16px;
+                      font-weight: 600;
+                      color: var(--dark-green);
+                    "
+                  >
+                    Total Profit
                   </div>
                 </div>
               </div>
-              <div class="lg:col-span-2">
+            </div>
+            <!-- Profit Sharing per Project -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Laporan Bagi Hasil per Proyek</h2>
+              </div>
+              <table class="transaction-table">
+                <thead>
+                  <tr>
+                    <th>Nama Proyek</th>
+                    <th>Petani</th>
+                    <th>Modal</th>
+                    <th>Profit</th>
+                    <th>ROI</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight: 600">Sayuran Hidroponik</td>
+                    <td>Pak Joko</td>
+                    <td>Rp 35.000.000</td>
+                    <td style="color: #28a745; font-weight: 700">
+                      + Rp 8.400.000
+                    </td>
+                    <td>
+                      <span
+                        class="roi-indicator"
+                        style="font-size: 12px; padding: 4px 10px"
+                        >24%</span
+                      >
+                    </td>
+                    <td>
+                      <span style="color: #28a745; font-weight: 600"
+                        >✓ Selesai</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 600">Padi Organik Q1</td>
+                    <td>Pak Suryanto</td>
+                    <td>Rp 75.000.000</td>
+                    <td style="color: #28a745; font-weight: 700">
+                      + Rp 12.750.000
+                    </td>
+                    <td>
+                      <span
+                        class="roi-indicator"
+                        style="font-size: 12px; padding: 4px 10px"
+                        >17%</span
+                      >
+                    </td>
+                    <td>
+                      <span style="color: #28a745; font-weight: 600"
+                        >✓ Selesai</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 600">Cabai Rawit</td>
+                    <td>Bu Siti</td>
+                    <td>Rp 42.000.000</td>
+                    <td style="color: #28a745; font-weight: 700">
+                      + Rp 9.240.000
+                    </td>
+                    <td>
+                      <span
+                        class="roi-indicator"
+                        style="font-size: 12px; padding: 4px 10px"
+                        >22%</span
+                      >
+                    </td>
+                    <td>
+                      <span style="color: #28a745; font-weight: 600"
+                        >✓ Selesai</span
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 600">Jagung Manis</td>
+                    <td>Bu Siti</td>
+                    <td>Rp 60.000.000</td>
+                    <td style="color: var(--text-gray); font-weight: 600">
+                      Estimasi: Rp 10.8 Jt
+                    </td>
+                    <td>
+                      <span
+                        class="roi-indicator"
+                        style="
+                          font-size: 12px;
+                          padding: 4px 10px;
+                          background-color: #e9ecef;
+                        "
+                        >18%</span
+                      >
+                    </td>
+                    <td>
+                      <span style="color: #ffc107; font-weight: 600"
+                        >⏳ Proses</span
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Transaction History -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Riwayat Transaksi</h2>
+                <button class="btn btn-outline">Export PDF</button>
+              </div>
+              <table class="transaction-table">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Deskripsi</th>
+                    <th>Proyek</th>
+                    <th>Tipe</th>
+                    <th>Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>18 Mar 2024</td>
+                    <td>Bagi Hasil Panen</td>
+                    <td>Sayuran Hidroponik</td>
+                    <td>
+                      <span style="color: #28a745; font-weight: 600"
+                        >Masuk</span
+                      >
+                    </td>
+                    <td style="color: #28a745; font-weight: 700">
+                      + Rp 8.400.000
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>15 Mar 2024</td>
+                    <td>Investasi Baru</td>
+                    <td>Padi Organik Musim 2</td>
+                    <td>
+                      <span style="color: #dc3545; font-weight: 600"
+                        >Keluar</span
+                      >
+                    </td>
+                    <td style="color: #dc3545; font-weight: 700">
+                      - Rp 80.000.000
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>12 Mar 2024</td>
+                    <td>Bagi Hasil Panen</td>
+                    <td>Padi Organik Q1</td>
+                    <td>
+                      <span style="color: #28a745; font-weight: 600"
+                        >Masuk</span
+                      >
+                    </td>
+                    <td style="color: #28a745; font-weight: 700">
+                      + Rp 12.750.000
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>8 Mar 2024</td>
+                    <td>Investasi Baru</td>
+                    <td>Cabai Merah Keriting</td>
+                    <td>
+                      <span style="color: #dc3545; font-weight: 600"
+                        >Keluar</span
+                      >
+                    </td>
+                    <td style="color: #dc3545; font-weight: 700">
+                      - Rp 45.000.000
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>5 Mar 2024</td>
+                    <td>Bagi Hasil Panen</td>
+                    <td>Cabai Rawit</td>
+                    <td>
+                      <span style="color: #28a745; font-weight: 600"
+                        >Masuk</span
+                      >
+                    </td>
+                    <td style="color: #28a745; font-weight: 700">
+                      + Rp 9.240.000
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Market Analysis Page -->
+          <div class="page-section" id="market">
+            <h2
+              style="
+                color: var(--dark-green);
+                margin-bottom: 28px;
+                font-size: 28px;
+              "
+            >
+              Analisis Pasar
+            </h2>
+            <!-- Commodity Prices -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Tren Harga Komoditas</h2>
+                <span style="font-size: 13px; color: var(--text-gray)"
+                  >Update: 20 Maret 2024</span
+                >
+              </div>
+              <div class="market-grid">
+                <div class="market-card">
+                  <h4>🌾 Padi / Beras</h4>
+                  <div class="price-display">Rp 12.500</div>
+                  <div
+                    style="
+                      font-size: 13px;
+                      color: var(--text-gray);
+                      margin-bottom: 8px;
+                    "
+                  >
+                    per kg
+                  </div>
+                  <div class="price-change price-up">↗ +8.5% bulan ini</div>
+                </div>
+                <div class="market-card">
+                  <h4>🌽 Jagung</h4>
+                  <div class="price-display">Rp 6.800</div>
+                  <div
+                    style="
+                      font-size: 13px;
+                      color: var(--text-gray);
+                      margin-bottom: 8px;
+                    "
+                  >
+                    per kg
+                  </div>
+                  <div class="price-change price-up">↗ +5.2% bulan ini</div>
+                </div>
+                <div class="market-card">
+                  <h4>🌶️ Cabai Merah</h4>
+                  <div class="price-display">Rp 45.000</div>
+                  <div
+                    style="
+                      font-size: 13px;
+                      color: var(--text-gray);
+                      margin-bottom: 8px;
+                    "
+                  >
+                    per kg
+                  </div>
+                  <div class="price-change price-down">↘ -3.2% bulan ini</div>
+                </div>
+                <div class="market-card">
+                  <h4>🥬 Sayuran</h4>
+                  <div class="price-display">Rp 8.500</div>
+                  <div
+                    style="
+                      font-size: 13px;
+                      color: var(--text-gray);
+                      margin-bottom: 8px;
+                    "
+                  >
+                    per kg
+                  </div>
+                  <div class="price-change price-up">↗ +12.3% bulan ini</div>
+                </div>
+              </div>
+            </div>
+            <!-- Success Rate by Region -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Statistik Tingkat Keberhasilan Proyek per Wilayah</h2>
+              </div>
+              <div style="margin-bottom: 28px">
                 <div
-                  class="card"
-                  style="height: 600px; display: flex; flex-direction: column"
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 12px;
+                  "
+                >
+                  <div>
+                    <span
+                      style="
+                        font-weight: 700;
+                        color: var(--dark-green);
+                        font-size: 16px;
+                      "
+                      >Jawa Barat</span
+                    >
+                    <span
+                      style="
+                        margin-left: 12px;
+                        color: var(--text-gray);
+                        font-size: 14px;
+                      "
+                      >24 proyek selesai</span
+                    >
+                  </div>
+                  <span
+                    style="font-weight: 700; color: #28a745; font-size: 16px"
+                    >92%</span
+                  >
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 92%"></div>
+                </div>
+              </div>
+              <div style="margin-bottom: 28px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 12px;
+                  "
+                >
+                  <div>
+                    <span
+                      style="
+                        font-weight: 700;
+                        color: var(--dark-green);
+                        font-size: 16px;
+                      "
+                      >Jawa Timur</span
+                    >
+                    <span
+                      style="
+                        margin-left: 12px;
+                        color: var(--text-gray);
+                        font-size: 14px;
+                      "
+                      >18 proyek selesai</span
+                    >
+                  </div>
+                  <span
+                    style="font-weight: 700; color: #28a745; font-size: 16px"
+                    >88%</span
+                  >
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 88%"></div>
+                </div>
+              </div>
+              <div style="margin-bottom: 28px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 12px;
+                  "
+                >
+                  <div>
+                    <span
+                      style="
+                        font-weight: 700;
+                        color: var(--dark-green);
+                        font-size: 16px;
+                      "
+                      >Jawa Tengah</span
+                    >
+                    <span
+                      style="
+                        margin-left: 12px;
+                        color: var(--text-gray);
+                        font-size: 14px;
+                      "
+                      >15 proyek selesai</span
+                    >
+                  </div>
+                  <span
+                    style="font-weight: 700; color: #28a745; font-size: 16px"
+                    >85%</span
+                  >
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 85%"></div>
+                </div>
+              </div>
+              <div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 12px;
+                  "
+                >
+                  <div>
+                    <span
+                      style="
+                        font-weight: 700;
+                        color: var(--dark-green);
+                        font-size: 16px;
+                      "
+                      >Sumatera</span
+                    >
+                    <span
+                      style="
+                        margin-left: 12px;
+                        color: var(--text-gray);
+                        font-size: 14px;
+                      "
+                      >12 proyek selesai</span
+                    >
+                  </div>
+                  <span
+                    style="font-weight: 700; color: #28a745; font-size: 16px"
+                    >90%</span
+                  >
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 90%"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Market Insights -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Insight &amp; Rekomendasi Pasar</h2>
+              </div>
+              <div style="display: grid; gap: 16px">
+                <div
+                  style="
+                    padding: 20px;
+                    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+                    border-radius: 12px;
+                    border-left: 4px solid #10b981;
+                  "
                 >
                   <div
-                    class="flex items-center gap-3 pb-4 border-b"
-                    style="border-color: #e5e7eb"
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 12px;
+                      margin-bottom: 8px;
+                    "
                   >
-                    <div
-                      class="w-12 h-12 rounded-full flex items-center justify-center text-xl"
-                      style="background: #2d6a4f; color: white"
-                    >
-                      👨‍🌾
-                    </div>
+                    <span style="font-size: 28px">📈</span>
+                    <h4 style="margin: 0; color: var(--dark-green)">
+                      Peluang Tinggi: Sayuran Organik
+                    </h4>
+                  </div>
+                  <p style="margin: 8px 0 0 0; color: #065f46">
+                    Permintaan sayuran organik meningkat 35% dalam 3 bulan
+                    terakhir. ROI rata-rata 22-28%.
+                  </p>
+                </div>
+                <div
+                  style="
+                    padding: 20px;
+                    background: linear-gradient(
+                      135deg,
+                      var(--light-gold),
+                      #fff8dc
+                    );
+                    border-radius: 12px;
+                    border-left: 4px solid var(--gold);
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 12px;
+                      margin-bottom: 8px;
+                    "
+                  >
+                    <span style="font-size: 28px">⚠️</span>
+                    <h4 style="margin: 0; color: var(--dark-green)">
+                      Perhatian: Harga Cabai Fluktuatif
+                    </h4>
+                  </div>
+                  <p style="margin: 8px 0 0 0; color: #92400e">
+                    Harga cabai turun 3.2% bulan ini. Pertimbangkan timing
+                    investasi dengan cermat.
+                  </p>
+                </div>
+                <div
+                  style="
+                    padding: 20px;
+                    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+                    border-radius: 12px;
+                    border-left: 4px solid #3b82f6;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 12px;
+                      margin-bottom: 8px;
+                    "
+                  >
+                    <span style="font-size: 28px">💡</span>
+                    <h4 style="margin: 0; color: var(--dark-green)">
+                      Rekomendasi: Diversifikasi Portfolio
+                    </h4>
+                  </div>
+                  <p style="margin: 8px 0 0 0; color: #1e40af">
+                    Sebaiknya investasi tersebar di 3-5 jenis komoditas berbeda
+                    untuk meminimalkan risiko.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Communication Page -->
+          <div class="page-section" id="communication">
+            <h2
+              style="
+                color: var(--dark-green);
+                margin-bottom: 28px;
+                font-size: 28px;
+              "
+            >
+              Komunikasi / Forum
+            </h2>
+            <div class="chat-container">
+              <div class="chat-list">
+                <h3 style="margin: 0 0 20px 0; color: var(--dark-green)">
+                  Pesan
+                </h3>
+                <div class="chat-item active">
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 12px;
+                      margin-bottom: 6px;
+                    "
+                  >
+                    <span style="font-size: 24px">👨‍🌾</span>
+                    <div style="font-weight: 700">Pak Suryanto</div>
+                  </div>
+                  <div style="font-size: 13px; color: var(--text-gray)">
+                    Update foto perkembangan padi...
+                  </div>
+                </div>
+                <div class="chat-item">
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 12px;
+                      margin-bottom: 6px;
+                    "
+                  >
+                    <span style="font-size: 24px">👩‍🌾</span>
+                    <div style="font-weight: 700">Bu Siti Aminah</div>
+                  </div>
+                  <div style="font-size: 13px; color: var(--text-gray)">
+                    Jagung siap panen minggu depan
+                  </div>
+                </div>
+                <div class="chat-item">
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 12px;
+                      margin-bottom: 6px;
+                    "
+                  >
+                    <span style="font-size: 24px">💼</span>
+                    <div style="font-weight: 700">Forum Investor</div>
+                  </div>
+                  <div style="font-size: 13px; color: var(--text-gray)">
+                    Diskusi peluang investasi baru
+                  </div>
+                </div>
+                <div class="chat-item">
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 12px;
+                      margin-bottom: 6px;
+                    "
+                  >
+                    <span style="font-size: 24px">👨‍🌾</span>
+                    <div style="font-weight: 700">Pak Budi Santoso</div>
+                  </div>
+                  <div style="font-size: 13px; color: var(--text-gray)">
+                    Terima kasih atas dukungannya
+                  </div>
+                </div>
+              </div>
+              <div class="chat-window">
+                <div class="chat-header">
+                  <div style="display: flex; align-items: center; gap: 12px">
+                    <span style="font-size: 32px">👨‍🌾</span>
                     <div>
-                      <p class="font-bold" style="color: #1b4332">
+                      <h3 style="margin: 0; color: var(--dark-green)">
                         Pak Suryanto
-                      </p>
-                      <p class="text-xs" style="color: #6b7280">
-                        Proyek Padi Organik - Online
-                      </p>
-                    </div>
-                  </div>
-                  <div class="flex-1 overflow-y-auto py-4 space-y-4">
-                    <div class="flex gap-3">
-                      <div
-                        class="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                        style="background: #2d6a4f; color: white"
-                      >
-                        👨‍🌾
-                      </div>
-                      <div class="flex-1">
-                        <div
-                          class="inline-block px-4 py-3 rounded-lg"
-                          style="background: #f3f4f6"
-                        >
-                          <p class="text-sm">
-                            Selamat pagi Pak Hartono. Saya ingin melaporkan
-                            perkembangan terbaru proyek padi organik.
-                          </p>
-                        </div>
-                        <p class="text-xs mt-1" style="color: #6b7280">08:30</p>
-                      </div>
-                    </div>
-                    <div class="flex gap-3">
-                      <div
-                        class="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                        style="background: #2d6a4f; color: white"
-                      >
-                        👨‍🌾
-                      </div>
-                      <div class="flex-1">
-                        <div
-                          class="inline-block px-4 py-3 rounded-lg"
-                          style="background: #f3f4f6"
-                        >
-                          <p class="text-sm">
-                            Tanaman sudah memasuki fase pembungaan dengan
-                            progress 75%. Kondisi sangat baik.
-                          </p>
-                        </div>
-                        <p class="text-xs mt-1" style="color: #6b7280">08:31</p>
-                      </div>
-                    </div>
-                    <div class="flex gap-3 justify-end">
-                      <div class="flex-1 text-right">
-                        <div
-                          class="inline-block px-4 py-3 rounded-lg text-white"
-                          style="
-                            background: linear-gradient(
-                              135deg,
-                              #1b4332,
-                              #2d6a4f
-                            );
-                          "
-                        >
-                          <p class="text-sm">
-                            Pagi Pak Suryanto. Terima kasih atas updatenya.
-                            Senang mendengar perkembangan yang positif!
-                          </p>
-                        </div>
-                        <p class="text-xs mt-1" style="color: #6b7280">08:35</p>
-                      </div>
-                      <div
-                        class="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                        style="background: #1b4332; color: white"
-                      >
-                        👨‍💼
-                      </div>
-                    </div>
-                    <div class="flex gap-3 justify-end">
-                      <div class="flex-1 text-right">
-                        <div
-                          class="inline-block px-4 py-3 rounded-lg text-white"
-                          style="
-                            background: linear-gradient(
-                              135deg,
-                              #1b4332,
-                              #2d6a4f
-                            );
-                          "
-                        >
-                          <p class="text-sm">
-                            Apakah ada kendala yang perlu diperhatikan?
-                          </p>
-                        </div>
-                        <p class="text-xs mt-1" style="color: #6b7280">08:36</p>
-                      </div>
-                      <div
-                        class="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                        style="background: #1b4332; color: white"
-                      >
-                        👨‍💼
-                      </div>
-                    </div>
-                    <div class="flex gap-3">
-                      <div
-                        class="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                        style="background: #2d6a4f; color: white"
-                      >
-                        👨‍🌾
-                      </div>
-                      <div class="flex-1">
-                        <div
-                          class="inline-block px-4 py-3 rounded-lg"
-                          style="background: #f3f4f6"
-                        >
-                          <p class="text-sm">
-                            Alhamdulillah tidak ada kendala berarti. Cuaca
-                            mendukung dan sistem irigasi berjalan lancar.
-                            Estimasi panen tetap sesuai jadwal dalam 45 hari.
-                          </p>
-                        </div>
-                        <p class="text-xs mt-1" style="color: #6b7280">08:40</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="pt-4 border-t" style="border-color: #e5e7eb">
-                    <div class="flex gap-3">
-                      <button
-                        class="px-4 py-2 rounded-lg"
-                        style="background: #f3f4f6"
-                      >
-                        📎
-                      </button>
-                      <input
-                        type="text"
-                        placeholder="Ketik pesan..."
-                        class="flex-1 px-4 py-2 border rounded-lg"
-                        style="border-color: #d1d5db"
-                      />
-                      <button
-                        class="px-6 py-2 rounded-lg text-white font-semibold"
+                      </h3>
+                      <p
                         style="
-                          background: linear-gradient(135deg, #1b4332, #2d6a4f);
+                          margin: 4px 0 0 0;
+                          font-size: 13px;
+                          color: #28a745;
                         "
                       >
-                        Kirim
-                      </button>
+                        ● Online
+                      </p>
                     </div>
+                  </div>
+                </div>
+                <div class="chat-messages">
+                  <div class="message received">
+                    <div>
+                      Selamat pagi Pak Hartono. Saya ingin update perkembangan
+                      proyek padi organik.
+                    </div>
+                    <div
+                      style="
+                        font-size: 11px;
+                        color: var(--text-gray);
+                        margin-top: 6px;
+                      "
+                    >
+                      08:45
+                    </div>
+                  </div>
+                  <div class="message sent">
+                    <div>
+                      Selamat pagi Pak Suryanto. Silakan, saya sangat menunggu
+                      update-nya.
+                    </div>
+                    <div style="font-size: 11px; margin-top: 6px; opacity: 0.8">
+                      08:47
+                    </div>
+                  </div>
+                  <div class="message received">
+                    <div>
+                      Alhamdulillah perkembangannya sangat baik. Tanaman sudah
+                      75% menuju masa panen. Cuaca mendukung dan tidak ada
+                      serangan hama.
+                    </div>
+                    <div
+                      style="
+                        font-size: 11px;
+                        color: var(--text-gray);
+                        margin-top: 6px;
+                      "
+                    >
+                      08:50
+                    </div>
+                  </div>
+                  <div class="message sent">
+                    <div>
+                      Luar biasa! Bisa kirimkan foto terbaru kondisi lahan?
+                    </div>
+                    <div style="font-size: 11px; margin-top: 6px; opacity: 0.8">
+                      08:52
+                    </div>
+                  </div>
+                  <div class="message received">
+                    <div>
+                      Baik Pak, saya akan upload foto detail sore ini setelah
+                      inspeksi rutin. Estimasi panen tetap sesuai jadwal,
+                      sekitar 30 hari lagi.
+                    </div>
+                    <div
+                      style="
+                        font-size: 11px;
+                        color: var(--text-gray);
+                        margin-top: 6px;
+                      "
+                    >
+                      08:55
+                    </div>
+                  </div>
+                  <div class="message sent">
+                    <div>
+                      Sempurna! Terima kasih atas update-nya Pak Suryanto. Tetap
+                      semangat! 💪
+                    </div>
+                    <div style="font-size: 11px; margin-top: 6px; opacity: 0.8">
+                      08:57
+                    </div>
+                  </div>
+                </div>
+                <div class="chat-input-area">
+                  <input
+                    type="text"
+                    class="chat-input"
+                    placeholder="Ketik pesan..."
+                  />
+                  <button class="btn btn-primary">Kirim</button>
+                </div>
+              </div>
+            </div>
+            <!-- Forum Section -->
+            <div class="card" style="margin-top: 32px">
+              <div class="card-header">
+                <h2>💼 Forum Diskusi Investor</h2>
+                <button class="btn btn-primary">+ Buat Topik Baru</button>
+              </div>
+              <div style="display: grid; gap: 16px">
+                <div
+                  style="
+                    padding: 20px;
+                    background-color: var(--light-gray);
+                    border-radius: 12px;
+                    border-left: 4px solid var(--gold);
+                    cursor: pointer;
+                    transition: all 0.2s;
+                  "
+                  onmouseover="this.style.backgroundColor='#E9ECEF'"
+                  onmouseout="this.style.backgroundColor='var(--light-gray)'"
+                >
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: start;
+                      margin-bottom: 12px;
+                    "
+                  >
+                    <h4
+                      style="
+                        margin: 0;
+                        color: var(--dark-green);
+                        font-size: 16px;
+                      "
+                    >
+                      Strategi Investasi di Musim Hujan
+                    </h4>
+                    <span style="font-size: 12px; color: var(--text-gray)"
+                      >2 jam lalu</span
+                    >
+                  </div>
+                  <p
+                    style="
+                      margin: 8px 0;
+                      color: var(--text-dark);
+                      font-size: 14px;
+                    "
+                  >
+                    Bagaimana strategi terbaik untuk investasi pertanian saat
+                    musim hujan? Share pengalaman Anda...
+                  </p>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 20px;
+                      font-size: 13px;
+                      color: var(--text-gray);
+                    "
+                  >
+                    <span>👤 Pak Bambang</span> <span>💬 12 balasan</span>
+                    <span>👁️ 45 views</span>
+                  </div>
+                </div>
+                <div
+                  style="
+                    padding: 20px;
+                    background-color: var(--light-gray);
+                    border-radius: 12px;
+                    border-left: 4px solid var(--medium-green);
+                    cursor: pointer;
+                    transition: all 0.2s;
+                  "
+                  onmouseover="this.style.backgroundColor='#E9ECEF'"
+                  onmouseout="this.style.backgroundColor='var(--light-gray)'"
+                >
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: start;
+                      margin-bottom: 12px;
+                    "
+                  >
+                    <h4
+                      style="
+                        margin: 0;
+                        color: var(--dark-green);
+                        font-size: 16px;
+                      "
+                    >
+                      Peluang Investasi Sayuran Organik
+                    </h4>
+                    <span style="font-size: 12px; color: var(--text-gray)"
+                      >5 jam lalu</span
+                    >
+                  </div>
+                  <p
+                    style="
+                      margin: 8px 0;
+                      color: var(--text-dark);
+                      font-size: 14px;
+                    "
+                  >
+                    Permintaan sayuran organik meningkat pesat. Ada yang
+                    tertarik kolaborasi investasi?
+                  </p>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 20px;
+                      font-size: 13px;
+                      color: var(--text-gray);
+                    "
+                  >
+                    <span>👤 Bu Ratna</span> <span>💬 8 balasan</span>
+                    <span>👁️ 32 views</span>
+                  </div>
+                </div>
+                <div
+                  style="
+                    padding: 20px;
+                    background-color: var(--light-gray);
+                    border-radius: 12px;
+                    border-left: 4px solid var(--light-green);
+                    cursor: pointer;
+                    transition: all 0.2s;
+                  "
+                  onmouseover="this.style.backgroundColor='#E9ECEF'"
+                  onmouseout="this.style.backgroundColor='var(--light-gray)'"
+                >
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: start;
+                      margin-bottom: 12px;
+                    "
+                  >
+                    <h4
+                      style="
+                        margin: 0;
+                        color: var(--dark-green);
+                        font-size: 16px;
+                      "
+                    >
+                      Tips Memilih Petani Terpercaya
+                    </h4>
+                    <span style="font-size: 12px; color: var(--text-gray)"
+                      >1 hari lalu</span
+                    >
+                  </div>
+                  <p
+                    style="
+                      margin: 8px 0;
+                      color: var(--text-dark);
+                      font-size: 14px;
+                    "
+                  >
+                    Apa kriteria yang Anda gunakan untuk memilih petani yang
+                    akan didanai?
+                  </p>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 20px;
+                      font-size: 13px;
+                      color: var(--text-gray);
+                    "
+                  >
+                    <span>👤 Pak Hendra</span> <span>💬 15 balasan</span>
+                    <span>👁️ 67 views</span>
                   </div>
                 </div>
               </div>
@@ -1927,72 +2626,222 @@
     <script>
       const defaultConfig = {
         investor_name: "Bapak Hartono Wijaya",
-        investor_balance: "Saldo: Rp 250.000.000",
+        investor_title: "Angel Investor - Sektor Agrikultur",
         welcome_message: "Selamat Datang di Dashboard Investasi Anda",
+        background_color: "#F8F9FA",
+        surface_color: "#FFFFFF",
+        text_color: "#1A1A1A",
+        primary_action_color: "#D4AF37",
+        secondary_action_color: "#1B4332",
+        font_family: "Segoe UI",
+        font_size: 16,
       };
 
       async function onConfigChange(config) {
         const investorName =
           config.investor_name || defaultConfig.investor_name;
-        const investorBalance =
-          config.investor_balance || defaultConfig.investor_balance;
+        const investorTitle =
+          config.investor_title || defaultConfig.investor_title;
         const welcomeMessage =
           config.welcome_message || defaultConfig.welcome_message;
+        const backgroundColor =
+          config.background_color || defaultConfig.background_color;
+        const surfaceColor =
+          config.surface_color || defaultConfig.surface_color;
+        const textColor = config.text_color || defaultConfig.text_color;
+        const primaryActionColor =
+          config.primary_action_color || defaultConfig.primary_action_color;
+        const secondaryActionColor =
+          config.secondary_action_color || defaultConfig.secondary_action_color;
+        const fontFamily = config.font_family || defaultConfig.font_family;
+        const fontSize = config.font_size || defaultConfig.font_size;
 
         document.getElementById("investor-name").textContent = investorName;
-        document.getElementById("investor-balance").textContent =
-          investorBalance;
+        document.getElementById("investor-title").textContent = investorTitle;
         document.getElementById("welcome-message").textContent = welcomeMessage;
-      }
 
-      function mapToCapabilities(config) {
-        return {
-          recolorables: [],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined,
-        };
-      }
+        document.body.style.backgroundColor = backgroundColor;
+        document.body.style.color = textColor;
+        document.body.style.fontFamily = `${fontFamily}, Tahoma, Geneva, Verdana, sans-serif`;
+        document.body.style.fontSize = `${fontSize}px`;
 
-      function mapToEditPanelValues(config) {
-        return new Map([
-          [
-            "investor_name",
-            config.investor_name || defaultConfig.investor_name,
-          ],
-          [
-            "investor_balance",
-            config.investor_balance || defaultConfig.investor_balance,
-          ],
-          [
-            "welcome_message",
-            config.welcome_message || defaultConfig.welcome_message,
-          ],
-        ]);
+        const cards = document.querySelectorAll(
+          ".card, .stat-card, .project-card, .chat-window, .chat-list, .market-card"
+        );
+        cards.forEach((card) => {
+          card.style.backgroundColor = surfaceColor;
+        });
+
+        const primaryButtons = document.querySelectorAll(".btn-primary");
+        primaryButtons.forEach((btn) => {
+          btn.style.background = `linear-gradient(135deg, ${primaryActionColor}, #C9A227)`;
+        });
+
+        const secondaryButtons = document.querySelectorAll(".btn-secondary");
+        secondaryButtons.forEach((btn) => {
+          btn.style.backgroundColor = secondaryActionColor;
+        });
       }
 
       if (window.elementSdk) {
         window.elementSdk.init({
           defaultConfig,
           onConfigChange,
-          mapToCapabilities,
-          mapToEditPanelValues,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () =>
+                  config.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  config.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                },
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  config.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                },
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                },
+              },
+              {
+                get: () =>
+                  config.primary_action_color ||
+                  defaultConfig.primary_action_color,
+                set: (value) => {
+                  config.primary_action_color = value;
+                  window.elementSdk.setConfig({ primary_action_color: value });
+                },
+              },
+              {
+                get: () =>
+                  config.secondary_action_color ||
+                  defaultConfig.secondary_action_color,
+                set: (value) => {
+                  config.secondary_action_color = value;
+                  window.elementSdk.setConfig({
+                    secondary_action_color: value,
+                  });
+                },
+              },
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              },
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              },
+            },
+          }),
+          mapToEditPanelValues: (config) =>
+            new Map([
+              [
+                "investor_name",
+                config.investor_name || defaultConfig.investor_name,
+              ],
+              [
+                "investor_title",
+                config.investor_title || defaultConfig.investor_title,
+              ],
+              [
+                "welcome_message",
+                config.welcome_message || defaultConfig.welcome_message,
+              ],
+            ]),
         });
       }
 
-      function showPage(pageName) {
-        const pages = document.querySelectorAll(".page-content");
-        pages.forEach((page) => page.classList.add("hidden"));
+      // Menu navigation
+      const menuItems = document.querySelectorAll(".menu-item");
+      const pageSections = document.querySelectorAll(".page-section");
 
-        const targetPage = document.getElementById(`page-${pageName}`);
-        if (targetPage) {
-          targetPage.classList.remove("hidden");
+      menuItems.forEach((item) => {
+        item.addEventListener("click", () => {
+          const targetPage = item.getAttribute("data-page");
+
+          menuItems.forEach((mi) => mi.classList.remove("active"));
+          item.classList.add("active");
+
+          pageSections.forEach((section) => {
+            section.classList.remove("active");
+            if (section.id === targetPage) {
+              section.classList.add("active");
+            }
+          });
+        });
+      });
+
+      // Chat functionality
+      const chatItems = document.querySelectorAll(".chat-item");
+      chatItems.forEach((item) => {
+        item.addEventListener("click", () => {
+          chatItems.forEach((ci) => ci.classList.remove("active"));
+          item.classList.add("active");
+        });
+      });
+
+      // Send message functionality
+      const chatInputs = document.querySelectorAll(".chat-input");
+      const sendButtons = document.querySelectorAll(
+        ".chat-input-area .btn-primary"
+      );
+
+      sendButtons.forEach((btn, index) => {
+        btn.addEventListener("click", () => {
+          const input = chatInputs[index];
+          if (input && input.value.trim()) {
+            const messagesContainer = input
+              .closest(".chat-window")
+              .querySelector(".chat-messages");
+            const newMessage = document.createElement("div");
+            newMessage.className = "message sent";
+            newMessage.innerHTML = `
+                        <div>${input.value}</div>
+                        <div style="font-size: 11px; margin-top: 6px; opacity: 0.8;">${new Date().toLocaleTimeString(
+                          "id-ID",
+                          { hour: "2-digit", minute: "2-digit" }
+                        )}</div>
+                    `;
+            messagesContainer.appendChild(newMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            input.value = "";
+          }
+        });
+      });
+
+      // Investment button functionality
+      const investButtons = document.querySelectorAll(".btn-primary");
+      investButtons.forEach((btn) => {
+        if (btn.textContent.includes("Danai Sekarang")) {
+          btn.addEventListener("click", () => {
+            const toast = document.createElement("div");
+            toast.style.cssText =
+              "position: fixed; top: 24px; right: 24px; background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 20px 28px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 1000; font-weight: 600;";
+            toast.textContent =
+              "✅ Permintaan investasi berhasil dikirim! Tim kami akan menghubungi Anda.";
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+              toast.remove();
+            }, 4000);
+          });
         }
-
-        const menuItems = document.querySelectorAll(".menu-item");
-        menuItems.forEach((item) => item.classList.remove("active"));
-        event.currentTarget.classList.add("active");
-      }
+      });
     </script>
     <script>
       (function () {
@@ -2001,7 +2850,7 @@
           if (b) {
             var d = b.createElement("script");
             d.innerHTML =
-              "window.__CF$cv$params={r:'99be02133302de08',t:'MTc2MjY5ODYyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+              "window.__CF$cv$params={r:'99be77e4a749f8e4',t:'MTc2MjcwMzQ1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
             b.getElementsByTagName("head")[0].appendChild(d);
           }
         }
