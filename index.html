@@ -5,31 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Petani</title>
     <script src="/_sdk/element_sdk.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       body {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f1e8 0%, #e8dcc4 100%);
+        height: 100%;
+        overflow-x: hidden;
       }
 
       * {
         box-sizing: border-box;
-      }
-
-      :root {
-        --primary-green: #2d5016;
-        --light-green: #4a7c2c;
-        --cream: #f5f1e8;
-        --light-cream: #faf8f3;
-        --dark-text: #1f2937;
-      }
-
-      body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-        background-color: var(--light-cream);
-        margin: 0;
-        padding: 0;
-        height: 100%;
       }
 
       .dashboard-container {
@@ -38,740 +27,529 @@
         min-height: 100%;
       }
 
+      /* Sidebar */
       .sidebar {
         width: 260px;
-        background-color: var(--primary-green);
+        background: linear-gradient(180deg, #1a4d2e 0%, #2d5f3f 100%);
         color: white;
-        padding: 24px 0;
+        padding: 20px;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
         overflow-y: auto;
-        flex-shrink: 0;
+        transition: transform 0.3s ease;
       }
 
       .sidebar-logo {
-        padding: 0 24px 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 24px;
-      }
-
-      .sidebar-logo h2 {
-        margin: 0;
-        font-size: 20px;
-        font-weight: 700;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-align: center;
+        padding: 15px;
+        background: linear-gradient(135deg, #4a7c59 0%, #2d5f3f 100%);
+        border-radius: 12px;
       }
 
       .menu-item {
-        padding: 12px 24px;
+        padding: 14px 18px;
+        margin: 8px 0;
+        border-radius: 10px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s ease;
         display: flex;
         align-items: center;
         gap: 12px;
-        font-size: 14px;
       }
 
       .menu-item:hover {
-        background-color: var(--light-green);
+        background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
+        transform: translateX(5px);
       }
 
       .menu-item.active {
-        background-color: var(--light-green);
-        border-left: 4px solid var(--cream);
+        background: linear-gradient(135deg, #5a8c69 0%, #4a7c59 100%);
+        box-shadow: 0 4px 12px rgba(90, 140, 105, 0.3);
       }
 
+      .menu-icon {
+        font-size: 20px;
+      }
+
+      /* Main Content */
       .main-content {
         flex: 1;
         overflow-y: auto;
-        display: flex;
-        flex-direction: column;
+        padding: 0;
       }
 
+      /* Header */
       .header {
-        background-color: white;
-        padding: 20px 32px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(135deg, #1a4d2e 0%, #2d5f3f 100%);
+        color: white;
+        padding: 20px 30px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       }
 
       .header-left h1 {
-        margin: 0 0 4px 0;
-        font-size: 24px;
-        color: var(--primary-green);
+        margin: 0;
+        font-size: 28px;
       }
 
       .header-left p {
-        margin: 0;
+        margin: 5px 0 0 0;
+        opacity: 0.9;
         font-size: 14px;
-        color: #6b7280;
       }
 
       .header-right {
         display: flex;
-        align-items: center;
         gap: 20px;
+        align-items: center;
       }
 
       .notification-badge {
         position: relative;
         cursor: pointer;
+        font-size: 24px;
         padding: 8px;
-        border-radius: 8px;
-        transition: background-color 0.2s;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transition: all 0.3s ease;
       }
 
       .notification-badge:hover {
-        background-color: var(--light-cream);
+        background: rgba(255, 255, 255, 0.2);
       }
 
       .badge-count {
         position: absolute;
-        top: 4px;
-        right: 4px;
-        background-color: #ef4444;
+        top: 0;
+        right: 0;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
         color: white;
         border-radius: 50%;
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 11px;
-        font-weight: 600;
+        font-weight: bold;
       }
 
+      /* Content Area */
       .content-area {
-        padding: 32px;
-        flex: 1;
+        padding: 30px;
       }
 
-      .page-section {
+      .page {
         display: none;
       }
 
-      .page-section.active {
+      .page.active {
         display: block;
       }
 
+      /* Cards */
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 20px;
-        margin-bottom: 32px;
+        margin-bottom: 30px;
       }
 
       .stat-card {
-        background: white;
-        padding: 24px;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid var(--light-green);
+        background: linear-gradient(135deg, #ffffff 0%, #f8f6f0 100%);
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(26, 77, 46, 0.1);
       }
 
-      .stat-card h3 {
-        margin: 0 0 8px 0;
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .stat-icon {
+        font-size: 36px;
+        margin-bottom: 15px;
+      }
+
+      .stat-value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #1a4d2e;
+        margin: 10px 0;
+      }
+
+      .stat-label {
+        color: #666;
         font-size: 14px;
-        color: #6b7280;
-        font-weight: 500;
       }
 
-      .stat-card .value {
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--primary-green);
-        margin: 0 0 4px 0;
+      .stat-change {
+        font-size: 12px;
+        color: #4a7c59;
+        margin-top: 8px;
       }
 
-      .stat-card .subtext {
-        font-size: 13px;
-        color: #10b981;
-        margin: 0;
+      /* Chart Card */
+      .chart-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f6f0 100%);
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
       }
 
-      .card {
-        background: white;
-        padding: 24px;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        margin-bottom: 24px;
-      }
-
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      .chart-card h3 {
+        color: #1a4d2e;
+        margin-top: 0;
         margin-bottom: 20px;
       }
 
-      .card-header h2 {
-        margin: 0;
-        font-size: 18px;
-        color: var(--primary-green);
-      }
-
-      .progress-bar {
-        background-color: #e5e7eb;
-        border-radius: 8px;
-        height: 12px;
-        overflow: hidden;
-        margin: 12px 0;
-      }
-
-      .progress-fill {
-        background: linear-gradient(90deg, var(--light-green), #10b981);
-        height: 100%;
-        transition: width 0.3s ease;
-      }
-
-      .weather-grid {
+      /* Weather Card */
+      .weather-section {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 12px;
+        gap: 15px;
+        margin-top: 20px;
       }
 
       .weather-day {
+        background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 12px;
         text-align: center;
-        padding: 16px 8px;
-        background-color: var(--light-cream);
-        border-radius: 8px;
+        transition: all 0.3s ease;
       }
 
-      .weather-day .day {
-        font-size: 13px;
-        color: #6b7280;
-        margin-bottom: 8px;
+      .weather-day:hover {
+        transform: scale(1.05);
       }
 
-      .weather-day .icon {
+      .weather-icon {
         font-size: 32px;
-        margin: 8px 0;
+        margin: 10px 0;
       }
 
-      .weather-day .temp {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--primary-green);
+      /* Notifications */
+      .notification-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
       }
 
       .notification-item {
-        padding: 16px;
-        background-color: var(--light-cream);
-        border-radius: 8px;
-        margin-bottom: 12px;
-        border-left: 4px solid var(--light-green);
+        background: linear-gradient(135deg, #ffffff 0%, #f8f6f0 100%);
+        padding: 18px;
+        border-radius: 12px;
+        border-left: 4px solid #4a7c59;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
       }
 
-      .notification-item .title {
-        font-weight: 600;
-        color: var(--primary-green);
-        margin-bottom: 4px;
+      .notification-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
       }
 
-      .notification-item .time {
-        font-size: 12px;
-        color: #6b7280;
+      .notification-item.urgent {
+        border-left-color: #ff6b6b;
       }
 
+      /* Land Cards */
       .land-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 20px;
+        margin-top: 20px;
       }
 
       .land-card {
-        background: white;
-        border-radius: 12px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f6f0 100%);
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
       }
 
       .land-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
       }
 
       .land-image {
         width: 100%;
         height: 180px;
-        background: linear-gradient(135deg, var(--light-green), #10b981);
+        background: linear-gradient(135deg, #4a7c59 0%, #2d5f3f 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 48px;
+        font-size: 64px;
       }
 
       .land-info {
         padding: 20px;
       }
 
-      .land-info h3 {
-        margin: 0 0 8px 0;
-        color: var(--primary-green);
-      }
-
-      .status-badge {
+      .land-status {
         display: inline-block;
-        padding: 4px 12px;
-        border-radius: 12px;
+        padding: 6px 14px;
+        border-radius: 20px;
         font-size: 12px;
-        font-weight: 600;
-        margin-top: 8px;
+        font-weight: bold;
+        margin-bottom: 10px;
       }
 
       .status-active {
-        background-color: #d1fae5;
-        color: #065f46;
+        background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
+        color: white;
       }
 
       .status-harvest {
-        background-color: #fef3c7;
-        color: #92400e;
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
       }
 
       .status-rest {
-        background-color: #e5e7eb;
-        color: #374151;
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        color: white;
       }
 
+      /* Buttons */
       .btn {
         padding: 12px 24px;
-        border-radius: 8px;
         border: none;
-        font-weight: 600;
+        border-radius: 10px;
         cursor: pointer;
-        transition: all 0.2s;
         font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
       }
 
       .btn-primary {
-        background-color: var(--light-green);
+        background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
         color: white;
       }
 
       .btn-primary:hover {
-        background-color: var(--primary-green);
+        background: linear-gradient(135deg, #5a8c69 0%, #4a7c59 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(74, 124, 89, 0.3);
       }
 
+      .btn-secondary {
+        background: linear-gradient(135deg, #e8dcc4 0%, #d4c4a8 100%);
+        color: #1a4d2e;
+      }
+
+      .btn-secondary:hover {
+        background: linear-gradient(135deg, #d4c4a8 0%, #c4b498 100%);
+      }
+
+      /* Calendar */
       .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 8px;
+        gap: 10px;
         margin-top: 20px;
       }
 
       .calendar-day {
-        aspect-ratio: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--light-cream);
-        border-radius: 8px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.2s;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f6f0 100%);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        min-height: 80px;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
       }
 
       .calendar-day:hover {
-        background-color: var(--cream);
+        border-color: #4a7c59;
+        transform: scale(1.05);
       }
 
       .calendar-day.has-activity {
-        background-color: var(--light-green);
+        background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
         color: white;
       }
 
-      .activity-list {
-        margin-top: 20px;
-      }
-
-      .activity-item {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 16px;
-        background-color: var(--light-cream);
-        border-radius: 8px;
-        margin-bottom: 12px;
-      }
-
-      .activity-icon {
-        width: 48px;
-        height: 48px;
-        background-color: var(--light-green);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        flex-shrink: 0;
-      }
-
-      .activity-details {
-        flex: 1;
-      }
-
-      .activity-details h4 {
-        margin: 0 0 4px 0;
-        color: var(--primary-green);
-      }
-
-      .activity-details p {
-        margin: 0;
-        font-size: 13px;
-        color: #6b7280;
-      }
-
-      .checkbox {
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-      }
-
-      .finance-summary {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-
-      .finance-item {
-        padding: 20px;
-        background-color: var(--light-cream);
-        border-radius: 8px;
-      }
-
-      .finance-item .label {
-        font-size: 13px;
-        color: #6b7280;
-        margin-bottom: 8px;
-      }
-
-      .finance-item .amount {
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--primary-green);
-      }
-
-      .transaction-table {
+      /* Table */
+      .data-table {
         width: 100%;
-        border-collapse: collapse;
-      }
-
-      .transaction-table th {
-        text-align: left;
-        padding: 12px;
-        background-color: var(--light-cream);
-        color: var(--primary-green);
-        font-weight: 600;
-        font-size: 14px;
-      }
-
-      .transaction-table td {
-        padding: 12px;
-        border-bottom: 1px solid #e5e7eb;
-      }
-
-      .chat-container {
-        display: flex;
-        gap: 20px;
-        height: 500px;
-      }
-
-      .chat-list {
-        width: 300px;
-        background: white;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f6f0 100%);
         border-radius: 12px;
-        padding: 16px;
-        overflow-y: auto;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
       }
 
-      .chat-item {
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 8px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-      }
-
-      .chat-item:hover {
-        background-color: var(--light-cream);
-      }
-
-      .chat-item.active {
-        background-color: var(--light-green);
+      .data-table th {
+        background: linear-gradient(135deg, #1a4d2e 0%, #2d5f3f 100%);
         color: white;
+        padding: 15px;
+        text-align: left;
       }
 
-      .chat-window {
-        flex: 1;
-        background: white;
-        border-radius: 12px;
+      .data-table td {
+        padding: 15px;
+        border-bottom: 1px solid #e8dcc4;
+      }
+
+      .data-table tr:hover {
+        background: linear-gradient(135deg, #f8f6f0 0%, #f0ead8 100%);
+      }
+
+      /* Chat */
+      .chat-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f6f0 100%);
+        border-radius: 16px;
+        padding: 20px;
+        height: 500px;
         display: flex;
         flex-direction: column;
-      }
-
-      .chat-header {
-        padding: 20px;
-        border-bottom: 1px solid #e5e7eb;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
       }
 
       .chat-messages {
         flex: 1;
-        padding: 20px;
         overflow-y: auto;
+        margin-bottom: 20px;
+        padding: 15px;
+      }
+
+      .chat-message {
+        margin-bottom: 15px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        max-width: 70%;
+      }
+
+      .chat-message.sent {
+        background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
+        color: white;
+        margin-left: auto;
+      }
+
+      .chat-message.received {
+        background: linear-gradient(135deg, #e8dcc4 0%, #d4c4a8 100%);
+        color: #1a4d2e;
       }
 
       .chat-input-area {
-        padding: 20px;
-        border-top: 1px solid #e5e7eb;
         display: flex;
-        gap: 12px;
+        gap: 10px;
       }
 
       .chat-input {
         flex: 1;
-        padding: 12px;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
+        padding: 12px 18px;
+        border: 2px solid #e8dcc4;
+        border-radius: 10px;
         font-size: 14px;
       }
 
-      .message {
-        margin-bottom: 16px;
-        max-width: 70%;
+      .chat-input:focus {
+        outline: none;
+        border-color: #4a7c59;
       }
 
-      .message.sent {
-        margin-left: auto;
-        background-color: var(--light-green);
+      /* Mobile Menu Toggle */
+      .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
         color: white;
-        padding: 12px 16px;
-        border-radius: 12px 12px 0 12px;
+        border-radius: 50%;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
       }
 
-      .message.received {
-        background-color: var(--light-cream);
-        padding: 12px 16px;
-        border-radius: 12px 12px 12px 0;
-      }
-
-      @media (max-width: 1920px) {
+      /* Responsive */
+      @media (max-width: 768px) {
         .sidebar {
-          width: 220px;
+          position: fixed;
+          left: 0;
+          top: 0;
+          height: 100%;
+          z-index: 999;
+          transform: translateX(-100%);
         }
 
-        .stats-grid {
-          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        }
-      }
-
-      @media (max-width: 1280px) {
-        .dashboard-container {
-          flex-direction: column;
+        .sidebar.active {
+          transform: translateX(0);
         }
 
-        .sidebar {
-          width: 100%;
-          padding: 16px 0;
-        }
-
-        .content-area {
-          padding: 20px;
+        .mobile-menu-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .header {
           flex-direction: column;
-          align-items: flex-start;
-          gap: 16px;
+          gap: 15px;
+          text-align: center;
         }
 
-        .chat-container {
-          flex-direction: column;
-          height: auto;
-        }
-
-        .chat-list {
-          width: 100%;
-          height: 200px;
+        .stats-grid {
+          grid-template-columns: 1fr;
         }
 
         .land-grid {
           grid-template-columns: 1fr;
         }
 
-        .stats-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .weather-grid {
-          grid-template-columns: repeat(4, 1fr);
-        }
-
-        .finance-summary {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 720px) {
-        .sidebar {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          width: 100%;
-          height: auto;
-          padding: 0;
-          z-index: 100;
-          box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-          display: flex;
-          overflow-x: auto;
-          overflow-y: hidden;
-        }
-
-        .sidebar-logo {
-          display: none;
-        }
-
-        .menu-item {
-          padding: 10px 12px;
-          font-size: 10px;
-          flex-direction: column;
-          gap: 4px;
-          text-align: center;
-          border-left: none;
-          border-top: 3px solid transparent;
-          flex: 1;
-          min-width: 70px;
-          white-space: nowrap;
-        }
-
-        .menu-item.active {
-          border-left: none;
-          border-top: 3px solid var(--cream);
-          background-color: var(--light-green);
-        }
-
-        .menu-item span:first-child {
-          font-size: 22px;
-        }
-
-        .menu-item span:last-child {
-          font-size: 9px;
-        }
-
-        .main-content {
-          padding-bottom: 80px;
-        }
-
-        .header {
-          padding: 16px;
-        }
-
-        .header-left h1 {
-          font-size: 20px;
-        }
-
-        .header-left p {
-          font-size: 13px;
-        }
-
-        .content-area {
-          padding: 16px;
-        }
-
-        .card {
-          padding: 16px;
-        }
-
-        .stat-card {
-          padding: 16px;
-        }
-
-        .stat-card .value {
-          font-size: 24px;
-        }
-
-        .weather-grid {
+        .calendar-grid {
           grid-template-columns: repeat(3, 1fr);
         }
 
-        .weather-day {
-          padding: 12px 4px;
+        .weather-section {
+          grid-template-columns: repeat(3, 1fr);
         }
+      }
 
-        .weather-day .icon {
-          font-size: 24px;
-        }
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
 
-        .weather-day .temp {
-          font-size: 14px;
-        }
+      .section-header h2 {
+        color: #1a4d2e;
+        margin: 0;
+      }
 
-        .calendar-grid {
-          gap: 4px;
-        }
+      .progress-bar {
+        width: 100%;
+        height: 12px;
+        background: #e8dcc4;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 10px 0;
+      }
 
-        .calendar-day {
-          font-size: 12px;
-        }
-
-        .activity-item {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
-        }
-
-        .activity-icon {
-          width: 40px;
-          height: 40px;
-          font-size: 20px;
-        }
-
-        .transaction-table {
-          font-size: 12px;
-        }
-
-        .transaction-table th,
-        .transaction-table td {
-          padding: 8px 4px;
-        }
-
-        .chat-container {
-          height: calc(100% - 100px);
-        }
-
-        .chat-list {
-          height: 150px;
-        }
-
-        .chat-messages {
-          padding: 12px;
-        }
-
-        .message {
-          max-width: 85%;
-          font-size: 14px;
-        }
-
-        .btn {
-          padding: 10px 16px;
-          font-size: 13px;
-        }
-
-        .land-image {
-          height: 140px;
-          font-size: 40px;
-        }
-
-        .land-info {
-          padding: 16px;
-        }
-
-        .land-info h3 {
-          font-size: 16px;
-        }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4a7c59 0%, #5a8c69 100%);
+        border-radius: 10px;
+        transition: width 0.3s ease;
       }
     </style>
     <style>
@@ -780,34 +558,33 @@
       }
     </style>
     <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+    <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
   </head>
   <body>
     <div class="dashboard-container">
       <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="sidebar-logo">
-          <h2>🌾 AgriConnect</h2>
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo">🌾 AgriDash</div>
+        <div class="menu-item active" onclick="showPage('overview')">
+          <span class="menu-icon">📊</span> <span>Ringkasan</span>
         </div>
-        <div class="menu-item active" data-page="overview">
-          <span>📊</span> <span>Ringkasan</span>
+        <div class="menu-item" onclick="showPage('land')">
+          <span class="menu-icon">🌱</span> <span>Ringkasan Lahan</span>
         </div>
-        <div class="menu-item" data-page="land">
-          <span>🌱</span> <span>Ringkasan Lahan</span>
+        <div class="menu-item" onclick="showPage('funding')">
+          <span class="menu-icon">💰</span> <span>Pengajuan Dana</span>
         </div>
-        <div class="menu-item" data-page="funding">
-          <span>💰</span> <span>Pengajuan Dana Baru</span>
+        <div class="menu-item" onclick="showPage('activity')">
+          <span class="menu-icon">📅</span> <span>Aktivitas Harian</span>
         </div>
-        <div class="menu-item" data-page="activity">
-          <span>📅</span> <span>Aktivitas Harian</span>
+        <div class="menu-item" onclick="showPage('finance')">
+          <span class="menu-icon">📈</span> <span>Keuangan &amp; Laporan</span>
         </div>
-        <div class="menu-item" data-page="finance">
-          <span>📈</span> <span>Keuangan &amp; Laporan</span>
+        <div class="menu-item" onclick="showPage('chat')">
+          <span class="menu-icon">💬</span> <span>Komunikasi</span>
         </div>
-        <div class="menu-item" data-page="chat">
-          <span>💬</span> <span>Chat / Komunikasi</span>
-        </div>
-        <div class="menu-item" data-page="help">
-          <span>❓</span> <span>Bantuan / Edukasi</span>
+        <div class="menu-item" onclick="showPage('help')">
+          <span class="menu-icon">❓</span> <span>Bantuan / Edukasi</span>
         </div>
       </div>
       <!-- Main Content -->
@@ -815,295 +592,273 @@
         <!-- Header -->
         <div class="header">
           <div class="header-left">
-            <h1 id="farmer-name">Bapak Suryanto</h1>
-            <p id="season-info">Musim Tanam 2024 - Padi Organik</p>
+            <h1 id="farmerName">Pak Budi Santoso</h1>
+            <p id="seasonInfo">Musim Tanam 2024 - Periode 1</p>
           </div>
           <div class="header-right">
             <div class="notification-badge">
-              <span style="font-size: 24px">🔔</span>
-              <span class="badge-count">3</span>
+              🔔 <span class="badge-count">5</span>
+            </div>
+            <div style="font-size: 14px">
+              <div style="font-weight: bold">Selamat Datang!</div>
+              <div style="opacity: 0.8">Petani Aktif</div>
             </div>
           </div>
         </div>
         <!-- Content Area -->
         <div class="content-area">
           <!-- Overview Page -->
-          <div class="page-section active" id="overview">
-            <h2
-              style="color: var(--primary-green); margin-bottom: 24px"
-              id="welcome-message"
-            >
-              Selamat Datang di Dashboard Anda
+          <div class="page active" id="overview">
+            <h2 id="welcomeMessage" style="color: #1a4d2e; margin-bottom: 25px">
+              Selamat datang kembali! 👋
             </h2>
             <!-- Stats Cards -->
             <div class="stats-grid">
               <div class="stat-card">
-                <h3>Lahan Aktif</h3>
-                <p class="value">4</p>
-                <p class="subtext">+1 dari bulan lalu</p>
+                <div class="stat-icon">🌾</div>
+                <div class="stat-value">8</div>
+                <div class="stat-label">Lahan Aktif</div>
+                <div class="stat-change">↑ 2 lahan baru bulan ini</div>
               </div>
               <div class="stat-card">
-                <h3>Total Dukungan Dana</h3>
-                <p class="value">Rp 45 Juta</p>
-                <p class="subtext">Dana tersedia</p>
+                <div class="stat-icon">💵</div>
+                <div class="stat-value">Rp 125 Jt</div>
+                <div class="stat-label">Total Dukungan Dana</div>
+                <div class="stat-change">↑ 15% dari periode lalu</div>
               </div>
               <div class="stat-card">
-                <h3>Estimasi Hasil Panen</h3>
-                <p class="value">2.8 Ton</p>
-                <p class="subtext">Dalam 45 hari</p>
+                <div class="stat-icon">🚜</div>
+                <div class="stat-value">12 Ton</div>
+                <div class="stat-label">Estimasi Hasil Panen</div>
+                <div class="stat-change">Panen dalam 3 minggu</div>
               </div>
             </div>
-            <!-- Progress Chart -->
-            <div class="card">
-              <div class="card-header">
-                <h2>Perkembangan Tanaman</h2>
-              </div>
-              <div>
-                <div style="margin-bottom: 20px">
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      margin-bottom: 8px;
-                    "
-                  >
-                    <span style="font-weight: 600; color: var(--primary-green)"
-                      >Lahan A - Padi</span
-                    >
-                    <span style="color: #6b7280">75%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 75%"></div>
-                  </div>
-                </div>
-                <div style="margin-bottom: 20px">
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      margin-bottom: 8px;
-                    "
-                  >
-                    <span style="font-weight: 600; color: var(--primary-green)"
-                      >Lahan B - Jagung</span
-                    >
-                    <span style="color: #6b7280">60%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 60%"></div>
-                  </div>
-                </div>
-                <div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      margin-bottom: 8px;
-                    "
-                  >
-                    <span style="font-weight: 600; color: var(--primary-green)"
-                      >Lahan C - Cabai</span
-                    >
-                    <span style="color: #6b7280">40%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 40%"></div>
-                  </div>
-                </div>
-              </div>
+            <!-- Chart -->
+            <div class="chart-card">
+              <h3>📈 Perkembangan Tanaman</h3>
+              <canvas id="progressChart" height="80"></canvas>
             </div>
             <!-- Weather -->
-            <div class="card">
-              <div class="card-header">
-                <h2>Cuaca &amp; Prakiraan 7 Hari</h2>
-              </div>
-              <div class="weather-grid">
+            <div class="chart-card">
+              <h3>🌤️ Cuaca &amp; Prakiraan 7 Hari</h3>
+              <div class="weather-section">
                 <div class="weather-day">
-                  <div class="day">Hari Ini</div>
-                  <div class="icon">☀️</div>
-                  <div class="temp">32°C</div>
+                  <div style="font-weight: bold">Senin</div>
+                  <div class="weather-icon">☀️</div>
+                  <div>32°C</div>
+                  <div style="font-size: 12px; opacity: 0.9">Cerah</div>
                 </div>
                 <div class="weather-day">
-                  <div class="day">Besok</div>
-                  <div class="icon">⛅</div>
-                  <div class="temp">30°C</div>
+                  <div style="font-weight: bold">Selasa</div>
+                  <div class="weather-icon">⛅</div>
+                  <div>30°C</div>
+                  <div style="font-size: 12px; opacity: 0.9">Berawan</div>
                 </div>
                 <div class="weather-day">
-                  <div class="day">Rabu</div>
-                  <div class="icon">🌧️</div>
-                  <div class="temp">28°C</div>
+                  <div style="font-weight: bold">Rabu</div>
+                  <div class="weather-icon">🌧️</div>
+                  <div>28°C</div>
+                  <div style="font-size: 12px; opacity: 0.9">Hujan</div>
                 </div>
                 <div class="weather-day">
-                  <div class="day">Kamis</div>
-                  <div class="icon">⛈️</div>
-                  <div class="temp">27°C</div>
+                  <div style="font-weight: bold">Kamis</div>
+                  <div class="weather-icon">🌦️</div>
+                  <div>29°C</div>
+                  <div style="font-size: 12px; opacity: 0.9">Hujan Ringan</div>
                 </div>
                 <div class="weather-day">
-                  <div class="day">Jumat</div>
-                  <div class="icon">🌤️</div>
-                  <div class="temp">29°C</div>
+                  <div style="font-weight: bold">Jumat</div>
+                  <div class="weather-icon">☀️</div>
+                  <div>31°C</div>
+                  <div style="font-size: 12px; opacity: 0.9">Cerah</div>
                 </div>
                 <div class="weather-day">
-                  <div class="day">Sabtu</div>
-                  <div class="icon">☀️</div>
-                  <div class="temp">31°C</div>
+                  <div style="font-weight: bold">Sabtu</div>
+                  <div class="weather-icon">☀️</div>
+                  <div>33°C</div>
+                  <div style="font-size: 12px; opacity: 0.9">Cerah</div>
                 </div>
                 <div class="weather-day">
-                  <div class="day">Minggu</div>
-                  <div class="icon">☀️</div>
-                  <div class="temp">33°C</div>
+                  <div style="font-weight: bold">Minggu</div>
+                  <div class="weather-icon">⛅</div>
+                  <div>30°C</div>
+                  <div style="font-size: 12px; opacity: 0.9">Berawan</div>
                 </div>
               </div>
             </div>
             <!-- Notifications -->
-            <div class="card">
-              <div class="card-header">
-                <h2>Notifikasi Penting</h2>
-              </div>
-              <div class="notification-item">
-                <div class="title">✅ Dana Proyek Diterima</div>
-                <p style="margin: 4px 0 0 0; font-size: 14px; color: #374151">
-                  Dana sebesar Rp 15 juta telah masuk ke rekening Anda
-                </p>
-                <div class="time">2 jam yang lalu</div>
-              </div>
-              <div class="notification-item">
-                <div class="title">🌾 Panen Minggu Depan</div>
-                <p style="margin: 4px 0 0 0; font-size: 14px; color: #374151">
-                  Lahan A siap panen dalam 7 hari. Persiapkan peralatan!
-                </p>
-                <div class="time">5 jam yang lalu</div>
-              </div>
-              <div class="notification-item">
-                <div class="title">💬 Pesan Baru dari Investor</div>
-                <p style="margin: 4px 0 0 0; font-size: 14px; color: #374151">
-                  Pak Ahmad ingin melihat update foto tanaman
-                </p>
-                <div class="time">1 hari yang lalu</div>
+            <div class="chart-card">
+              <h3>🔔 Notifikasi Penting</h3>
+              <div class="notification-list">
+                <div class="notification-item urgent">
+                  <div style="font-weight: bold; margin-bottom: 5px">
+                    💰 Dana Proyek Diterima
+                  </div>
+                  <div style="font-size: 14px; color: #666">
+                    Dana sebesar Rp 25 juta untuk Lahan Padi Sawah A telah
+                    masuk. Segera mulai persiapan tanam.
+                  </div>
+                  <div style="font-size: 12px; color: #999; margin-top: 8px">
+                    2 jam yang lalu
+                  </div>
+                </div>
+                <div class="notification-item">
+                  <div style="font-weight: bold; margin-bottom: 5px">
+                    🌾 Panen Minggu Depan
+                  </div>
+                  <div style="font-size: 14px; color: #666">
+                    Lahan Jagung B siap panen dalam 7 hari. Persiapkan tenaga
+                    kerja dan alat panen.
+                  </div>
+                  <div style="font-size: 12px; color: #999; margin-top: 8px">
+                    1 hari yang lalu
+                  </div>
+                </div>
+                <div class="notification-item">
+                  <div style="font-weight: bold; margin-bottom: 5px">
+                    📊 Laporan Mingguan Diperlukan
+                  </div>
+                  <div style="font-size: 14px; color: #666">
+                    Jangan lupa upload foto perkembangan tanaman untuk laporan
+                    mingguan ke investor.
+                  </div>
+                  <div style="font-size: 12px; color: #999; margin-top: 8px">
+                    2 hari yang lalu
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <!-- Land Page -->
-          <div class="page-section" id="land">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 24px;
-              "
-            >
-              <h2 style="color: var(--primary-green); margin: 0">
-                Ringkasan Lahan
-              </h2>
-              <button class="btn btn-primary">+ Tambah Lahan Baru</button>
+          <div class="page" id="land">
+            <div class="section-header">
+              <h2>🌱 Ringkasan Lahan</h2>
+              <button class="btn btn-primary" onclick="showAddLandForm()">
+                ➕ Tambah Lahan Baru
+              </button>
             </div>
             <div class="land-grid">
               <div class="land-card">
                 <div class="land-image">🌾</div>
                 <div class="land-info">
-                  <h3>Lahan A - Padi Organik</h3>
-                  <p style="margin: 4px 0; color: #6b7280">Luas: 2 Hektar</p>
-                  <p style="margin: 4px 0; color: #6b7280">
-                    Ditanam: 15 Jan 2024
+                  <span class="land-status status-active">Ditanam</span>
+                  <h3 style="margin: 10px 0; color: #1a4d2e">
+                    Lahan Padi Sawah A
+                  </h3>
+                  <p style="color: #666; font-size: 14px; margin: 8px 0">
+                    Luas: 2.5 Hektar
                   </p>
-                  <span class="status-badge status-active">Ditanam</span>
+                  <p style="color: #666; font-size: 14px; margin: 8px 0">
+                    Jenis: Padi IR64
+                  </p>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%"></div>
+                  </div>
+                  <p style="font-size: 12px; color: #999; margin-top: 8px">
+                    Hari ke-65 dari 100 hari
+                  </p>
                 </div>
               </div>
               <div class="land-card">
                 <div class="land-image">🌽</div>
                 <div class="land-info">
-                  <h3>Lahan B - Jagung Manis</h3>
-                  <p style="margin: 4px 0; color: #6b7280">Luas: 1.5 Hektar</p>
-                  <p style="margin: 4px 0; color: #6b7280">
-                    Ditanam: 1 Feb 2024
+                  <span class="land-status status-harvest">Siap Panen</span>
+                  <h3 style="margin: 10px 0; color: #1a4d2e">Lahan Jagung B</h3>
+                  <p style="color: #666; font-size: 14px; margin: 8px 0">
+                    Luas: 1.8 Hektar
                   </p>
-                  <span class="status-badge status-active">Ditanam</span>
-                </div>
-              </div>
-              <div class="land-card">
-                <div class="land-image">🌶️</div>
-                <div class="land-info">
-                  <h3>Lahan C - Cabai Merah</h3>
-                  <p style="margin: 4px 0; color: #6b7280">Luas: 0.8 Hektar</p>
-                  <p style="margin: 4px 0; color: #6b7280">
-                    Ditanam: 10 Feb 2024
+                  <p style="color: #666; font-size: 14px; margin: 8px 0">
+                    Jenis: Jagung Hibrida
                   </p>
-                  <span class="status-badge status-active">Ditanam</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 95%"></div>
+                  </div>
+                  <p style="font-size: 12px; color: #999; margin-top: 8px">
+                    Panen dalam 7 hari
+                  </p>
                 </div>
               </div>
               <div class="land-card">
                 <div class="land-image">🥬</div>
                 <div class="land-info">
-                  <h3>Lahan D - Sayuran</h3>
-                  <p style="margin: 4px 0; color: #6b7280">Luas: 1 Hektar</p>
-                  <p style="margin: 4px 0; color: #6b7280">Panen: 5 Mar 2024</p>
-                  <span class="status-badge status-harvest">Siap Panen</span>
+                  <span class="land-status status-active">Ditanam</span>
+                  <h3 style="margin: 10px 0; color: #1a4d2e">
+                    Lahan Sayuran C
+                  </h3>
+                  <p style="color: #666; font-size: 14px; margin: 8px 0">
+                    Luas: 0.5 Hektar
+                  </p>
+                  <p style="color: #666; font-size: 14px; margin: 8px 0">
+                    Jenis: Kangkung &amp; Bayam
+                  </p>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%"></div>
+                  </div>
+                  <p style="font-size: 12px; color: #999; margin-top: 8px">
+                    Hari ke-12 dari 30 hari
+                  </p>
+                </div>
+              </div>
+              <div class="land-card">
+                <div class="land-image">🌱</div>
+                <div class="land-info">
+                  <span class="land-status status-rest">Istirahat</span>
+                  <h3 style="margin: 10px 0; color: #1a4d2e">
+                    Lahan Cadangan D
+                  </h3>
+                  <p style="color: #666; font-size: 14px; margin: 8px 0">
+                    Luas: 1.2 Hektar
+                  </p>
+                  <p style="color: #666; font-size: 14px; margin: 8px 0">
+                    Status: Pemulihan Tanah
+                  </p>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 30%"></div>
+                  </div>
+                  <p style="font-size: 12px; color: #999; margin-top: 8px">
+                    Siap tanam dalam 21 hari
+                  </p>
                 </div>
               </div>
             </div>
           </div>
           <!-- Funding Page -->
-          <div class="page-section" id="funding">
-            <h2 style="color: var(--primary-green); margin-bottom: 24px">
-              Pengajuan Dana Baru
-            </h2>
-            <div class="card">
-              <h3 style="color: var(--primary-green); margin-bottom: 20px">
-                Form Pengajuan Proyek
-              </h3>
-              <form id="funding-form">
-                <div style="margin-bottom: 20px">
+          <div class="page" id="funding">
+            <div class="section-header">
+              <h2>💰 Pengajuan Dana Baru</h2>
+            </div>
+            <div class="chart-card">
+              <h3>Formulir Pengajuan Dana</h3>
+              <form style="display: grid; gap: 20px; max-width: 600px">
+                <div>
                   <label
                     style="
                       display: block;
                       margin-bottom: 8px;
+                      color: #1a4d2e;
                       font-weight: 600;
-                      color: var(--primary-green);
                     "
                     >Nama Proyek</label
                   >
                   <input
                     type="text"
-                    placeholder="Contoh: Penanaman Padi Organik Musim 2"
+                    placeholder="Contoh: Penanaman Padi Organik"
                     style="
                       width: 100%;
                       padding: 12px;
-                      border: 1px solid #e5e7eb;
+                      border: 2px solid #e8dcc4;
                       border-radius: 8px;
                       font-size: 14px;
                     "
                   />
                 </div>
-                <div style="margin-bottom: 20px">
+                <div>
                   <label
                     style="
                       display: block;
                       margin-bottom: 8px;
+                      color: #1a4d2e;
                       font-weight: 600;
-                      color: var(--primary-green);
-                    "
-                    >Jenis Tanaman</label
-                  >
-                  <input
-                    type="text"
-                    placeholder="Contoh: Padi, Jagung, Cabai"
-                    style="
-                      width: 100%;
-                      padding: 12px;
-                      border: 1px solid #e5e7eb;
-                      border-radius: 8px;
-                      font-size: 14px;
-                    "
-                  />
-                </div>
-                <div style="margin-bottom: 20px">
-                  <label
-                    style="
-                      display: block;
-                      margin-bottom: 8px;
-                      font-weight: 600;
-                      color: var(--primary-green);
                     "
                     >Luas Lahan (Hektar)</label
                   >
@@ -1113,318 +868,379 @@
                     style="
                       width: 100%;
                       padding: 12px;
-                      border: 1px solid #e5e7eb;
+                      border: 2px solid #e8dcc4;
                       border-radius: 8px;
                       font-size: 14px;
                     "
                   />
                 </div>
-                <div style="margin-bottom: 20px">
+                <div>
                   <label
                     style="
                       display: block;
                       margin-bottom: 8px;
+                      color: #1a4d2e;
                       font-weight: 600;
-                      color: var(--primary-green);
+                    "
+                    >Jenis Tanaman</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Padi, Jagung, Sayuran, dll"
+                    style="
+                      width: 100%;
+                      padding: 12px;
+                      border: 2px solid #e8dcc4;
+                      border-radius: 8px;
+                      font-size: 14px;
+                    "
+                  />
+                </div>
+                <div>
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 8px;
+                      color: #1a4d2e;
+                      font-weight: 600;
                     "
                     >Dana yang Dibutuhkan (Rp)</label
                   >
                   <input
                     type="number"
-                    placeholder="20000000"
+                    placeholder="25000000"
                     style="
                       width: 100%;
                       padding: 12px;
-                      border: 1px solid #e5e7eb;
+                      border: 2px solid #e8dcc4;
                       border-radius: 8px;
                       font-size: 14px;
                     "
                   />
                 </div>
-                <div style="margin-bottom: 20px">
+                <div>
                   <label
                     style="
                       display: block;
                       margin-bottom: 8px;
+                      color: #1a4d2e;
                       font-weight: 600;
-                      color: var(--primary-green);
                     "
                     >Deskripsi Proyek</label
                   >
                   <textarea
-                    placeholder="Jelaskan detail proyek Anda..."
-                    rows="4"
+                    placeholder="Jelaskan rencana penanaman, target hasil, dan penggunaan dana..."
                     style="
                       width: 100%;
                       padding: 12px;
-                      border: 1px solid #e5e7eb;
+                      border: 2px solid #e8dcc4;
                       border-radius: 8px;
                       font-size: 14px;
-                      resize: vertical;
+                      min-height: 100px;
+                      font-family: inherit;
                     "
                   ></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                  Ajukan Proyek
+                <div>
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 8px;
+                      color: #1a4d2e;
+                      font-weight: 600;
+                    "
+                    >Upload Foto Lahan</label
+                  >
+                  <input
+                    type="file"
+                    style="
+                      width: 100%;
+                      padding: 12px;
+                      border: 2px solid #e8dcc4;
+                      border-radius: 8px;
+                      font-size: 14px;
+                    "
+                  />
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  style="width: fit-content"
+                >
+                  📤 Ajukan Proposal
                 </button>
               </form>
             </div>
+            <div class="chart-card" style="margin-top: 30px">
+              <h3>📋 Riwayat Pengajuan</h3>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nama Proyek</th>
+                    <th>Dana</th>
+                    <th>Status</th>
+                    <th>Tanggal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Padi Sawah A</td>
+                    <td>Rp 25.000.000</td>
+                    <td>
+                      <span
+                        style="
+                          background: linear-gradient(
+                            135deg,
+                            #4a7c59 0%,
+                            #3d6b4a 100%
+                          );
+                          color: white;
+                          padding: 4px 12px;
+                          border-radius: 12px;
+                          font-size: 12px;
+                        "
+                        >Disetujui</span
+                      >
+                    </td>
+                    <td>15 Jan 2024</td>
+                  </tr>
+                  <tr>
+                    <td>Jagung Hibrida B</td>
+                    <td>Rp 18.000.000</td>
+                    <td>
+                      <span
+                        style="
+                          background: linear-gradient(
+                            135deg,
+                            #f39c12 0%,
+                            #e67e22 100%
+                          );
+                          color: white;
+                          padding: 4px 12px;
+                          border-radius: 12px;
+                          font-size: 12px;
+                        "
+                        >Menunggu</span
+                      >
+                    </td>
+                    <td>20 Jan 2024</td>
+                  </tr>
+                  <tr>
+                    <td>Sayuran Organik C</td>
+                    <td>Rp 8.000.000</td>
+                    <td>
+                      <span
+                        style="
+                          background: linear-gradient(
+                            135deg,
+                            #4a7c59 0%,
+                            #3d6b4a 100%
+                          );
+                          color: white;
+                          padding: 4px 12px;
+                          border-radius: 12px;
+                          font-size: 12px;
+                        "
+                        >Disetujui</span
+                      >
+                    </td>
+                    <td>10 Jan 2024</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
           <!-- Activity Page -->
-          <div class="page-section" id="activity">
-            <h2 style="color: var(--primary-green); margin-bottom: 24px">
-              Aktivitas Harian
-            </h2>
-            <div class="card">
-              <h3 style="color: var(--primary-green); margin-bottom: 16px">
-                Checklist Hari Ini
-              </h3>
-              <div class="activity-list">
-                <div class="activity-item">
-                  <div class="activity-icon">💧</div>
-                  <div class="activity-details">
-                    <h4>Penyiraman Lahan A</h4>
-                    <p>Pagi hari - 06:00 WIB</p>
-                  </div>
-                  <input type="checkbox" class="checkbox" />
+          <div class="page" id="activity">
+            <div class="section-header">
+              <h2>📅 Aktivitas Harian</h2>
+            </div>
+            <div class="chart-card">
+              <h3>Kalender Aktivitas Bulan Ini</h3>
+              <div class="calendar-grid">
+                <div class="calendar-day">
+                  <div style="font-weight: bold; margin-bottom: 5px">1</div>
+                  <div style="font-size: 12px">Penyiraman</div>
                 </div>
-                <div class="activity-item">
-                  <div class="activity-icon">🌱</div>
-                  <div class="activity-details">
-                    <h4>Pemupukan Lahan B</h4>
-                    <p>Siang hari - 10:00 WIB</p>
-                  </div>
-                  <input type="checkbox" class="checkbox" />
+                <div class="calendar-day has-activity">
+                  <div style="font-weight: bold; margin-bottom: 5px">2</div>
+                  <div style="font-size: 12px">Pemupukan</div>
                 </div>
-                <div class="activity-item">
-                  <div class="activity-icon">🔍</div>
-                  <div class="activity-details">
-                    <h4>Inspeksi Hama Lahan C</h4>
-                    <p>Sore hari - 16:00 WIB</p>
-                  </div>
-                  <input type="checkbox" class="checkbox" />
+                <div class="calendar-day">
+                  <div style="font-weight: bold; margin-bottom: 5px">3</div>
+                </div>
+                <div class="calendar-day has-activity">
+                  <div style="font-weight: bold; margin-bottom: 5px">4</div>
+                  <div style="font-size: 12px">Penyiraman</div>
+                </div>
+                <div class="calendar-day">
+                  <div style="font-weight: bold; margin-bottom: 5px">5</div>
+                </div>
+                <div class="calendar-day has-activity">
+                  <div style="font-weight: bold; margin-bottom: 5px">6</div>
+                  <div style="font-size: 12px">Penyemprotan</div>
+                </div>
+                <div class="calendar-day">
+                  <div style="font-weight: bold; margin-bottom: 5px">7</div>
+                </div>
+                <div class="calendar-day has-activity">
+                  <div style="font-weight: bold; margin-bottom: 5px">8</div>
+                  <div style="font-size: 12px">Penyiraman</div>
+                </div>
+                <div class="calendar-day">
+                  <div style="font-weight: bold; margin-bottom: 5px">9</div>
+                </div>
+                <div class="calendar-day has-activity">
+                  <div style="font-weight: bold; margin-bottom: 5px">10</div>
+                  <div style="font-size: 12px">Pemupukan</div>
+                </div>
+                <div class="calendar-day">
+                  <div style="font-weight: bold; margin-bottom: 5px">11</div>
+                </div>
+                <div class="calendar-day">
+                  <div style="font-weight: bold; margin-bottom: 5px">12</div>
+                </div>
+                <div class="calendar-day has-activity">
+                  <div style="font-weight: bold; margin-bottom: 5px">13</div>
+                  <div style="font-size: 12px">Penyiraman</div>
+                </div>
+                <div class="calendar-day">
+                  <div style="font-weight: bold; margin-bottom: 5px">14</div>
                 </div>
               </div>
             </div>
-            <div class="card">
-              <h3 style="color: var(--primary-green); margin-bottom: 16px">
-                Kalender Aktivitas
-              </h3>
-              <div
-                style="
-                  display: grid;
-                  grid-template-columns: repeat(7, 1fr);
-                  gap: 8px;
-                  margin-bottom: 12px;
-                "
-              >
-                <div
+            <div class="chart-card" style="margin-top: 30px">
+              <h3>✅ Checklist Hari Ini</h3>
+              <div style="display: flex; flex-direction: column; gap: 15px">
+                <label
                   style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--primary-green);
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 15px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 10px;
+                    cursor: pointer;
                   "
                 >
-                  Min
-                </div>
-                <div
+                  <input
+                    type="checkbox"
+                    checked
+                    style="width: 20px; height: 20px; cursor: pointer"
+                  />
+                  <span style="flex: 1"
+                    >Penyiraman Lahan Padi Sawah A (Pagi)</span
+                  >
+                  <span style="color: #4a7c59; font-size: 12px">✓ Selesai</span>
+                </label>
+                <label
                   style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--primary-green);
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 15px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 10px;
+                    cursor: pointer;
                   "
                 >
-                  Sen
-                </div>
-                <div
+                  <input
+                    type="checkbox"
+                    style="width: 20px; height: 20px; cursor: pointer"
+                  />
+                  <span style="flex: 1">Pemupukan Lahan Jagung B</span>
+                  <span style="color: #f39c12; font-size: 12px">⏰ Sore</span>
+                </label>
+                <label
                   style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--primary-green);
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 15px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 10px;
+                    cursor: pointer;
                   "
                 >
-                  Sel
-                </div>
-                <div
+                  <input
+                    type="checkbox"
+                    style="width: 20px; height: 20px; cursor: pointer"
+                  />
+                  <span style="flex: 1">Cek Hama di Lahan Sayuran C</span>
+                  <span style="color: #f39c12; font-size: 12px">⏰ Siang</span>
+                </label>
+                <label
                   style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--primary-green);
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 15px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 10px;
+                    cursor: pointer;
                   "
                 >
-                  Rab
-                </div>
-                <div
-                  style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--primary-green);
-                  "
-                >
-                  Kam
-                </div>
-                <div
-                  style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--primary-green);
-                  "
-                >
-                  Jum
-                </div>
-                <div
-                  style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--primary-green);
-                  "
-                >
-                  Sab
-                </div>
-              </div>
-              <div class="calendar-grid">
-                <div class="calendar-day">1</div>
-                <div class="calendar-day has-activity">2</div>
-                <div class="calendar-day">3</div>
-                <div class="calendar-day has-activity">4</div>
-                <div class="calendar-day">5</div>
-                <div class="calendar-day has-activity">6</div>
-                <div class="calendar-day">7</div>
-                <div class="calendar-day">8</div>
-                <div class="calendar-day has-activity">9</div>
-                <div class="calendar-day">10</div>
-                <div class="calendar-day">11</div>
-                <div class="calendar-day has-activity">12</div>
-                <div class="calendar-day">13</div>
-                <div class="calendar-day">14</div>
-                <div class="calendar-day">15</div>
-                <div class="calendar-day has-activity">16</div>
-                <div class="calendar-day">17</div>
-                <div class="calendar-day">18</div>
-                <div class="calendar-day">19</div>
-                <div class="calendar-day">20</div>
+                  <input
+                    type="checkbox"
+                    checked
+                    style="width: 20px; height: 20px; cursor: pointer"
+                  />
+                  <span style="flex: 1"
+                    >Upload Foto Perkembangan ke Investor</span
+                  >
+                  <span style="color: #4a7c59; font-size: 12px">✓ Selesai</span>
+                </label>
               </div>
             </div>
           </div>
           <!-- Finance Page -->
-          <div class="page-section" id="finance">
-            <h2 style="color: var(--primary-green); margin-bottom: 24px">
-              Keuangan &amp; Laporan
-            </h2>
-            <div class="finance-summary">
-              <div class="finance-item">
-                <div class="label">Total Biaya Operasional</div>
-                <div class="amount">Rp 28 Jt</div>
+          <div class="page" id="finance">
+            <div class="section-header">
+              <h2>📈 Keuangan &amp; Laporan</h2>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">💸</div>
+                <div class="stat-value">Rp 85 Jt</div>
+                <div class="stat-label">Total Biaya Operasional</div>
+                <div class="stat-change">Periode ini</div>
               </div>
-              <div class="finance-item">
-                <div class="label">Pemasukan Panen</div>
-                <div class="amount">Rp 52 Jt</div>
+              <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value">Rp 145 Jt</div>
+                <div class="stat-label">Pemasukan Hasil Panen</div>
+                <div class="stat-change">↑ 22% dari periode lalu</div>
               </div>
-              <div class="finance-item">
-                <div class="label">Keuntungan Bersih</div>
-                <div class="amount" style="color: #10b981">Rp 24 Jt</div>
+              <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">Rp 60 Jt</div>
+                <div class="stat-label">Keuntungan Bersih</div>
+                <div class="stat-change">Margin 41%</div>
               </div>
             </div>
-            <div class="card">
-              <div class="card-header">
-                <h2>Grafik Keuntungan per Musim</h2>
-              </div>
-              <div
-                style="
-                  height: 200px;
-                  display: flex;
-                  align-items: flex-end;
-                  gap: 20px;
-                  padding: 20px 0;
-                "
-              >
-                <div
-                  style="
-                    flex: 1;
-                    background: linear-gradient(
-                      to top,
-                      var(--light-green),
-                      #10b981
-                    );
-                    height: 60%;
-                    border-radius: 8px 8px 0 0;
-                    display: flex;
-                    align-items: flex-end;
-                    justify-content: center;
-                    padding-bottom: 8px;
-                    color: white;
-                    font-weight: 600;
-                  "
-                >
-                  Q1
-                </div>
-                <div
-                  style="
-                    flex: 1;
-                    background: linear-gradient(
-                      to top,
-                      var(--light-green),
-                      #10b981
-                    );
-                    height: 75%;
-                    border-radius: 8px 8px 0 0;
-                    display: flex;
-                    align-items: flex-end;
-                    justify-content: center;
-                    padding-bottom: 8px;
-                    color: white;
-                    font-weight: 600;
-                  "
-                >
-                  Q2
-                </div>
-                <div
-                  style="
-                    flex: 1;
-                    background: linear-gradient(
-                      to top,
-                      var(--light-green),
-                      #10b981
-                    );
-                    height: 85%;
-                    border-radius: 8px 8px 0 0;
-                    display: flex;
-                    align-items: flex-end;
-                    justify-content: center;
-                    padding-bottom: 8px;
-                    color: white;
-                    font-weight: 600;
-                  "
-                >
-                  Q3
-                </div>
-                <div
-                  style="
-                    flex: 1;
-                    background: linear-gradient(
-                      to top,
-                      var(--light-green),
-                      #10b981
-                    );
-                    height: 95%;
-                    border-radius: 8px 8px 0 0;
-                    display: flex;
-                    align-items: flex-end;
-                    justify-content: center;
-                    padding-bottom: 8px;
-                    color: white;
-                    font-weight: 600;
-                  "
-                >
-                  Q4
-                </div>
-              </div>
+            <div class="chart-card">
+              <h3>📊 Grafik Keuntungan per Musim</h3>
+              <canvas id="profitChart" height="80"></canvas>
             </div>
-            <div class="card">
-              <div class="card-header">
-                <h2>Riwayat Transaksi</h2>
-              </div>
-              <table class="transaction-table">
+            <div class="chart-card" style="margin-top: 30px">
+              <h3>💳 Riwayat Transaksi</h3>
+              <table class="data-table">
                 <thead>
                   <tr>
                     <th>Tanggal</th>
@@ -1435,51 +1251,63 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>15 Mar 2024</td>
-                    <td>Dana Investor - Proyek Padi</td>
+                    <td>25 Jan 2024</td>
+                    <td>Penjualan Padi Sawah A</td>
                     <td>
-                      <span style="color: #10b981; font-weight: 600"
-                        >Masuk</span
+                      <span style="color: #4a7c59; font-weight: bold"
+                        >Pemasukan</span
                       >
                     </td>
-                    <td style="color: #10b981; font-weight: 600">
-                      + Rp 15.000.000
+                    <td style="color: #4a7c59; font-weight: bold">
+                      + Rp 45.000.000
                     </td>
                   </tr>
                   <tr>
-                    <td>12 Mar 2024</td>
+                    <td>23 Jan 2024</td>
                     <td>Pembelian Pupuk</td>
                     <td>
-                      <span style="color: #ef4444; font-weight: 600"
-                        >Keluar</span
+                      <span style="color: #e74c3c; font-weight: bold"
+                        >Pengeluaran</span
                       >
                     </td>
-                    <td style="color: #ef4444; font-weight: 600">
-                      - Rp 3.500.000
+                    <td style="color: #e74c3c; font-weight: bold">
+                      - Rp 8.500.000
                     </td>
                   </tr>
                   <tr>
-                    <td>10 Mar 2024</td>
-                    <td>Penjualan Hasil Panen</td>
+                    <td>20 Jan 2024</td>
+                    <td>Dana Investor Masuk</td>
                     <td>
-                      <span style="color: #10b981; font-weight: 600"
-                        >Masuk</span
+                      <span style="color: #4a7c59; font-weight: bold"
+                        >Pemasukan</span
                       >
                     </td>
-                    <td style="color: #10b981; font-weight: 600">
-                      + Rp 22.000.000
+                    <td style="color: #4a7c59; font-weight: bold">
+                      + Rp 25.000.000
                     </td>
                   </tr>
                   <tr>
-                    <td>8 Mar 2024</td>
-                    <td>Biaya Tenaga Kerja</td>
+                    <td>18 Jan 2024</td>
+                    <td>Upah Tenaga Kerja</td>
                     <td>
-                      <span style="color: #ef4444; font-weight: 600"
-                        >Keluar</span
+                      <span style="color: #e74c3c; font-weight: bold"
+                        >Pengeluaran</span
                       >
                     </td>
-                    <td style="color: #ef4444; font-weight: 600">
-                      - Rp 5.000.000
+                    <td style="color: #e74c3c; font-weight: bold">
+                      - Rp 12.000.000
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>15 Jan 2024</td>
+                    <td>Penjualan Jagung B</td>
+                    <td>
+                      <span style="color: #4a7c59; font-weight: bold"
+                        >Pemasukan</span
+                      >
+                    </td>
+                    <td style="color: #4a7c59; font-weight: bold">
+                      + Rp 32.000.000
                     </td>
                   </tr>
                 </tbody>
@@ -1487,78 +1315,52 @@
             </div>
           </div>
           <!-- Chat Page -->
-          <div class="page-section" id="chat">
-            <h2 style="color: var(--primary-green); margin-bottom: 24px">
-              Chat / Komunikasi
-            </h2>
-            <div class="chat-container">
-              <div class="chat-list">
-                <h3 style="margin: 0 0 16px 0; color: var(--primary-green)">
-                  Kontak
-                </h3>
-                <div class="chat-item active">
-                  <div style="font-weight: 600">Pak Ahmad (Investor)</div>
-                  <div style="font-size: 13px; color: #6b7280; margin-top: 4px">
-                    Bagaimana perkembangan...
-                  </div>
-                </div>
-                <div class="chat-item">
-                  <div style="font-weight: 600">Admin Platform</div>
-                  <div style="font-size: 13px; color: #6b7280; margin-top: 4px">
-                    Terima kasih atas laporan...
-                  </div>
-                </div>
-                <div class="chat-item">
-                  <div style="font-weight: 600">Bu Siti (Investor)</div>
-                  <div style="font-size: 13px; color: #6b7280; margin-top: 4px">
-                    Kapan jadwal panen?
-                  </div>
-                </div>
-              </div>
-              <div class="chat-window">
-                <div class="chat-header">
-                  <h3 style="margin: 0; color: var(--primary-green)">
-                    Pak Ahmad (Investor)
-                  </h3>
-                  <p style="margin: 4px 0 0 0; font-size: 13px; color: #6b7280">
-                    Online
-                  </p>
-                </div>
+          <div class="page" id="chat">
+            <div class="section-header">
+              <h2>💬 Komunikasi</h2>
+            </div>
+            <div class="chart-card">
+              <h3>Chat dengan Investor &amp; Admin</h3>
+              <div class="chat-container">
                 <div class="chat-messages">
-                  <div class="message received">
-                    <div>
-                      Selamat pagi Pak Suryanto, bagaimana perkembangan tanaman
-                      padi di lahan A?
+                  <div class="chat-message received">
+                    <div style="font-weight: bold; margin-bottom: 5px">
+                      Investor - Pak Ahmad
                     </div>
-                    <div
-                      style="font-size: 11px; color: #6b7280; margin-top: 4px"
-                    >
-                      09:30
+                    <div>
+                      Selamat pagi Pak Budi, bagaimana perkembangan lahan padi
+                      sawah A?
+                    </div>
+                    <div style="font-size: 11px; opacity: 0.7; margin-top: 5px">
+                      08:30
                     </div>
                   </div>
-                  <div class="message sent">
+                  <div class="chat-message sent">
                     <div>
-                      Selamat pagi Pak Ahmad. Alhamdulillah perkembangannya
-                      sangat baik, sudah 75% menuju panen.
+                      Pagi Pak Ahmad, alhamdulillah perkembangannya baik. Sudah
+                      65% dan sesuai jadwal. Saya akan upload foto terbaru hari
+                      ini.
                     </div>
-                    <div style="font-size: 11px; margin-top: 4px; opacity: 0.8">
-                      09:35
+                    <div style="font-size: 11px; opacity: 0.8; margin-top: 5px">
+                      08:45
                     </div>
                   </div>
-                  <div class="message received">
-                    <div>Bagus sekali! Bisa kirimkan foto terbaru?</div>
-                    <div
-                      style="font-size: 11px; color: #6b7280; margin-top: 4px"
-                    >
-                      09:36
+                  <div class="chat-message received">
+                    <div style="font-weight: bold; margin-bottom: 5px">
+                      Admin Platform
+                    </div>
+                    <div>
+                      Reminder: Jangan lupa upload laporan mingguan sebelum
+                      Jumat ya Pak.
+                    </div>
+                    <div style="font-size: 11px; opacity: 0.7; margin-top: 5px">
+                      10:15
                     </div>
                   </div>
-                  <div class="message sent">
-                    <div>
-                      Baik Pak, saya akan upload foto sore ini setelah inspeksi.
-                    </div>
-                    <div style="font-size: 11px; margin-top: 4px; opacity: 0.8">
-                      09:40
+                  <div class="chat-message sent">
+                    <div>Siap, terima kasih remindernya!</div>
+                    <div style="font-size: 11px; opacity: 0.8; margin-top: 5px">
+                      10:20
                     </div>
                   </div>
                 </div>
@@ -1568,195 +1370,222 @@
                     class="chat-input"
                     placeholder="Ketik pesan..."
                   />
-                  <button class="btn btn-primary">Kirim</button>
+                  <button class="btn btn-primary">📤 Kirim</button>
                 </div>
+              </div>
+            </div>
+            <div class="chart-card" style="margin-top: 30px">
+              <h3>📸 Upload Foto Perkembangan</h3>
+              <div style="display: grid; gap: 15px">
+                <input
+                  type="file"
+                  accept="image/*"
+                  style="
+                    padding: 12px;
+                    border: 2px solid #e8dcc4;
+                    border-radius: 8px;
+                  "
+                />
+                <textarea
+                  placeholder="Tambahkan catatan atau deskripsi foto..."
+                  style="
+                    padding: 12px;
+                    border: 2px solid #e8dcc4;
+                    border-radius: 8px;
+                    min-height: 80px;
+                    font-family: inherit;
+                  "
+                ></textarea>
+                <button class="btn btn-primary" style="width: fit-content">
+                  📤 Upload Foto
+                </button>
               </div>
             </div>
           </div>
           <!-- Help Page -->
-          <div class="page-section" id="help">
-            <h2 style="color: var(--primary-green); margin-bottom: 24px">
-              Bantuan / Edukasi
-            </h2>
-            <div class="card">
-              <h3 style="color: var(--primary-green); margin-bottom: 16px">
-                📚 Panduan Pertanian
-              </h3>
-              <div style="display: grid; gap: 16px">
+          <div class="page" id="help">
+            <div class="section-header">
+              <h2>❓ Bantuan &amp; Edukasi</h2>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card" style="cursor: pointer">
+                <div class="stat-icon">📚</div>
+                <h3 style="color: #1a4d2e; margin: 10px 0">Panduan Pemula</h3>
+                <p style="color: #666; font-size: 14px">
+                  Pelajari dasar-dasar pertanian digital dan cara menggunakan
+                  platform
+                </p>
+              </div>
+              <div class="stat-card" style="cursor: pointer">
+                <div class="stat-icon">🎥</div>
+                <h3 style="color: #1a4d2e; margin: 10px 0">Video Tutorial</h3>
+                <p style="color: #666; font-size: 14px">
+                  Tonton video panduan lengkap tentang teknik pertanian modern
+                </p>
+              </div>
+              <div class="stat-card" style="cursor: pointer">
+                <div class="stat-icon">🌱</div>
+                <h3 style="color: #1a4d2e; margin: 10px 0">Tips Pertanian</h3>
+                <p style="color: #666; font-size: 14px">
+                  Dapatkan tips dan trik dari petani berpengalaman
+                </p>
+              </div>
+            </div>
+            <div class="chart-card">
+              <h3>📖 Artikel Terbaru</h3>
+              <div style="display: flex; flex-direction: column; gap: 15px">
                 <div
                   style="
-                    padding: 16px;
-                    background-color: var(--light-cream);
-                    border-radius: 8px;
+                    padding: 18px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 12px;
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.3s ease;
                   "
-                  onmouseover="this.style.backgroundColor='var(--cream)'"
-                  onmouseout="this.style.backgroundColor='var(--light-cream)'"
+                  onmouseover="this.style.transform='translateX(5px)'"
+                  onmouseout="this.style.transform='translateX(0)'"
                 >
-                  <h4 style="margin: 0 0 8px 0; color: var(--primary-green)">
-                    🌾 Teknik Penanaman Padi Modern
+                  <h4 style="color: #1a4d2e; margin: 0 0 8px 0">
+                    Cara Mengatasi Hama Tanaman Padi
                   </h4>
-                  <p style="margin: 0; font-size: 14px; color: #6b7280">
-                    Pelajari metode SRI dan cara meningkatkan hasil panen
+                  <p style="color: #666; font-size: 14px; margin: 0">
+                    Pelajari metode organik dan modern untuk mengendalikan hama
+                    pada tanaman padi...
                   </p>
+                  <div style="color: #999; font-size: 12px; margin-top: 8px">
+                    5 menit baca • 2 hari lalu
+                  </div>
                 </div>
                 <div
                   style="
-                    padding: 16px;
-                    background-color: var(--light-cream);
-                    border-radius: 8px;
+                    padding: 18px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 12px;
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.3s ease;
                   "
-                  onmouseover="this.style.backgroundColor='var(--cream)'"
-                  onmouseout="this.style.backgroundColor='var(--light-cream)'"
+                  onmouseover="this.style.transform='translateX(5px)'"
+                  onmouseout="this.style.transform='translateX(0)'"
                 >
-                  <h4 style="margin: 0 0 8px 0; color: var(--primary-green)">
-                    🐛 Pengendalian Hama Organik
+                  <h4 style="color: #1a4d2e; margin: 0 0 8px 0">
+                    Teknik Pemupukan yang Efektif
                   </h4>
-                  <p style="margin: 0; font-size: 14px; color: #6b7280">
-                    Cara mengatasi hama tanpa pestisida kimia
+                  <p style="color: #666; font-size: 14px; margin: 0">
+                    Panduan lengkap tentang jenis pupuk, dosis, dan waktu
+                    pemupukan yang tepat...
                   </p>
+                  <div style="color: #999; font-size: 12px; margin-top: 8px">
+                    7 menit baca • 4 hari lalu
+                  </div>
                 </div>
                 <div
                   style="
-                    padding: 16px;
-                    background-color: var(--light-cream);
-                    border-radius: 8px;
+                    padding: 18px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 12px;
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.3s ease;
                   "
-                  onmouseover="this.style.backgroundColor='var(--cream)'"
-                  onmouseout="this.style.backgroundColor='var(--light-cream)'"
+                  onmouseover="this.style.transform='translateX(5px)'"
+                  onmouseout="this.style.transform='translateX(0)'"
                 >
-                  <h4 style="margin: 0 0 8px 0; color: var(--primary-green)">
-                    💧 Manajemen Irigasi Efisien
+                  <h4 style="color: #1a4d2e; margin: 0 0 8px 0">
+                    Meningkatkan Hasil Panen Jagung
                   </h4>
-                  <p style="margin: 0; font-size: 14px; color: #6b7280">
-                    Hemat air dengan sistem irigasi tetes
+                  <p style="color: #666; font-size: 14px; margin: 0">
+                    Tips dan strategi untuk memaksimalkan produktivitas lahan
+                    jagung Anda...
                   </p>
-                </div>
-                <div
-                  style="
-                    padding: 16px;
-                    background-color: var(--light-cream);
-                    border-radius: 8px;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                  "
-                  onmouseover="this.style.backgroundColor='var(--cream)'"
-                  onmouseout="this.style.backgroundColor='var(--light-cream)'"
-                >
-                  <h4 style="margin: 0 0 8px 0; color: var(--primary-green)">
-                    📊 Analisis Pasar &amp; Harga
-                  </h4>
-                  <p style="margin: 0; font-size: 14px; color: #6b7280">
-                    Strategi menjual hasil panen dengan harga terbaik
-                  </p>
+                  <div style="color: #999; font-size: 12px; margin-top: 8px">
+                    6 menit baca • 1 minggu lalu
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="card">
-              <h3 style="color: var(--primary-green); margin-bottom: 16px">
-                ❓ FAQ - Pertanyaan Umum
-              </h3>
-              <div style="display: grid; gap: 12px">
-                <details
+            <div class="chart-card" style="margin-top: 30px">
+              <h3>📞 Hubungi Kami</h3>
+              <div style="display: grid; gap: 15px">
+                <div
                   style="
-                    padding: 16px;
-                    background-color: var(--light-cream);
-                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 15px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 10px;
                   "
                 >
-                  <summary
-                    style="
-                      cursor: pointer;
-                      font-weight: 600;
-                      color: var(--primary-green);
-                    "
-                  >
-                    Bagaimana cara mengajukan dana baru?
-                  </summary>
-                  <p
-                    style="margin: 12px 0 0 0; font-size: 14px; color: #374151"
-                  >
-                    Klik menu "Pengajuan Dana Baru", isi form dengan lengkap,
-                    dan kirimkan. Tim kami akan review dalam 2-3 hari kerja.
-                  </p>
-                </details>
-                <details
+                  <span style="font-size: 24px">📧</span>
+                  <div>
+                    <div style="font-weight: bold; color: #1a4d2e">
+                      Email Support
+                    </div>
+                    <div style="color: #666; font-size: 14px">
+                      adityaardiansyah2003@gmail.com
+                    </div>
+                  </div>
+                </div>
+                <div
                   style="
-                    padding: 16px;
-                    background-color: var(--light-cream);
-                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 15px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 10px;
                   "
                 >
-                  <summary
-                    style="
-                      cursor: pointer;
-                      font-weight: 600;
-                      color: var(--primary-green);
-                    "
-                  >
-                    Kapan dana cair setelah disetujui?
-                  </summary>
-                  <p
-                    style="margin: 12px 0 0 0; font-size: 14px; color: #374151"
-                  >
-                    Dana akan ditransfer maksimal 3 hari kerja setelah
-                    persetujuan investor.
-                  </p>
-                </details>
-                <details
-                  style="
-                    padding: 16px;
-                    background-color: var(--light-cream);
-                    border-radius: 8px;
-                  "
-                >
-                  <summary
-                    style="
-                      cursor: pointer;
-                      font-weight: 600;
-                      color: var(--primary-green);
-                    "
-                  >
-                    Bagaimana cara upload foto perkembangan?
-                  </summary>
-                  <p
-                    style="margin: 12px 0 0 0; font-size: 14px; color: #374151"
-                  >
-                    Buka menu "Chat/Komunikasi", pilih investor, dan gunakan
-                    tombol upload foto di area chat.
-                  </p>
-                </details>
-              </div>
-            </div>
-            <div class="card">
-              <h3 style="color: var(--primary-green); margin-bottom: 16px">
-                📞 Hubungi Kami
-              </h3>
-              <div style="display: grid; gap: 12px">
-                <div style="display: flex; align-items: center; gap: 12px">
                   <span style="font-size: 24px">📱</span>
                   <div>
-                    <div style="font-weight: 600; color: var(--primary-green)">
-                      WhatsApp Support
+                    <div style="font-weight: bold; color: #1a4d2e">
+                      WhatsApp
                     </div>
-                    <div style="font-size: 14px; color: #6b7280">
+                    <div style="color: #666; font-size: 14px">
                       +62 831-3628-6696
                     </div>
                   </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 12px">
-                  <span style="font-size: 24px">✉️</span>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 15px;
+                    background: linear-gradient(
+                      135deg,
+                      #f8f6f0 0%,
+                      #f0ead8 100%
+                    );
+                    border-radius: 10px;
+                  "
+                >
+                  <span style="font-size: 24px">⏰</span>
                   <div>
-                    <div style="font-weight: 600; color: var(--primary-green)">
-                      Email
+                    <div style="font-weight: bold; color: #1a4d2e">
+                      Jam Operasional
                     </div>
-                    <div style="font-size: 14px; color: #6b7280">
-                      adityaardiansyah@gmail.com
+                    <div style="color: #666; font-size: 14px">
+                      Senin - Jumat: 08:00 - 17:00 WIB
                     </div>
                   </div>
                 </div>
@@ -1766,184 +1595,188 @@
         </div>
       </div>
     </div>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
     <script>
       const defaultConfig = {
-        farmer_name: "Bapak Suryanto",
-        season_info: "Musim Tanam 2024 - Padi Organik",
-        welcome_message: "Selamat Datang di Dashboard Anda",
-        background_color: "#FAF8F3",
-        surface_color: "#FFFFFF",
-        text_color: "#1F2937",
-        primary_action_color: "#4A7C2C",
-        secondary_action_color: "#2D5016",
-        font_family: "Inter",
-        font_size: 16,
+        farmer_name: "Pak Budi Santoso",
+        season_info: "Musim Tanam 2024 - Periode 1",
+        welcome_message: "Selamat datang kembali! 👋",
       };
 
-      async function onConfigChange(config) {
-        const farmerName = config.farmer_name || defaultConfig.farmer_name;
-        const seasonInfo = config.season_info || defaultConfig.season_info;
-        const welcomeMessage =
-          config.welcome_message || defaultConfig.welcome_message;
-        const backgroundColor =
-          config.background_color || defaultConfig.background_color;
-        const surfaceColor =
-          config.surface_color || defaultConfig.surface_color;
-        const textColor = config.text_color || defaultConfig.text_color;
-        const primaryActionColor =
-          config.primary_action_color || defaultConfig.primary_action_color;
-        const secondaryActionColor =
-          config.secondary_action_color || defaultConfig.secondary_action_color;
-        const fontFamily = config.font_family || defaultConfig.font_family;
-        const fontSize = config.font_size || defaultConfig.font_size;
+      let config = { ...defaultConfig };
 
-        document.getElementById("farmer-name").textContent = farmerName;
-        document.getElementById("season-info").textContent = seasonInfo;
-        document.getElementById("welcome-message").textContent = welcomeMessage;
+      async function onConfigChange(newConfig) {
+        config = { ...newConfig };
 
-        document.body.style.backgroundColor = backgroundColor;
-        document.body.style.color = textColor;
-        document.body.style.fontFamily = `${fontFamily}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
-        document.body.style.fontSize = `${fontSize}px`;
+        const farmerNameEl = document.getElementById("farmerName");
+        const seasonInfoEl = document.getElementById("seasonInfo");
+        const welcomeMessageEl = document.getElementById("welcomeMessage");
 
-        const cards = document.querySelectorAll(
-          ".card, .stat-card, .land-card, .chat-window, .chat-list"
-        );
-        cards.forEach((card) => {
-          card.style.backgroundColor = surfaceColor;
-        });
-
-        const buttons = document.querySelectorAll(".btn-primary");
-        buttons.forEach((btn) => {
-          btn.style.backgroundColor = primaryActionColor;
-        });
-
-        const sidebar = document.querySelector(".sidebar");
-        if (sidebar) {
-          sidebar.style.backgroundColor = secondaryActionColor;
+        if (farmerNameEl) {
+          farmerNameEl.textContent =
+            config.farmer_name || defaultConfig.farmer_name;
         }
+        if (seasonInfoEl) {
+          seasonInfoEl.textContent =
+            config.season_info || defaultConfig.season_info;
+        }
+        if (welcomeMessageEl) {
+          welcomeMessageEl.textContent =
+            config.welcome_message || defaultConfig.welcome_message;
+        }
+      }
 
-        const menuItems = document.querySelectorAll(
-          ".menu-item.active, .menu-item:hover"
-        );
-        menuItems.forEach((item) => {
-          item.style.backgroundColor = primaryActionColor;
-        });
+      function mapToCapabilities(config) {
+        return {
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined,
+        };
+      }
+
+      function mapToEditPanelValues(config) {
+        return new Map([
+          ["farmer_name", config.farmer_name || defaultConfig.farmer_name],
+          ["season_info", config.season_info || defaultConfig.season_info],
+          [
+            "welcome_message",
+            config.welcome_message || defaultConfig.welcome_message,
+          ],
+        ]);
       }
 
       if (window.elementSdk) {
         window.elementSdk.init({
           defaultConfig,
           onConfigChange,
-          mapToCapabilities: (config) => ({
-            recolorables: [
-              {
-                get: () =>
-                  config.background_color || defaultConfig.background_color,
-                set: (value) => {
-                  config.background_color = value;
-                  window.elementSdk.setConfig({ background_color: value });
-                },
-              },
-              {
-                get: () => config.surface_color || defaultConfig.surface_color,
-                set: (value) => {
-                  config.surface_color = value;
-                  window.elementSdk.setConfig({ surface_color: value });
-                },
-              },
-              {
-                get: () => config.text_color || defaultConfig.text_color,
-                set: (value) => {
-                  config.text_color = value;
-                  window.elementSdk.setConfig({ text_color: value });
-                },
-              },
-              {
-                get: () =>
-                  config.primary_action_color ||
-                  defaultConfig.primary_action_color,
-                set: (value) => {
-                  config.primary_action_color = value;
-                  window.elementSdk.setConfig({ primary_action_color: value });
-                },
-              },
-              {
-                get: () =>
-                  config.secondary_action_color ||
-                  defaultConfig.secondary_action_color,
-                set: (value) => {
-                  config.secondary_action_color = value;
-                  window.elementSdk.setConfig({
-                    secondary_action_color: value,
-                  });
-                },
-              },
-            ],
-            borderables: [],
-            fontEditable: {
-              get: () => config.font_family || defaultConfig.font_family,
-              set: (value) => {
-                config.font_family = value;
-                window.elementSdk.setConfig({ font_family: value });
-              },
-            },
-            fontSizeable: {
-              get: () => config.font_size || defaultConfig.font_size,
-              set: (value) => {
-                config.font_size = value;
-                window.elementSdk.setConfig({ font_size: value });
-              },
-            },
-          }),
-          mapToEditPanelValues: (config) =>
-            new Map([
-              ["farmer_name", config.farmer_name || defaultConfig.farmer_name],
-              ["season_info", config.season_info || defaultConfig.season_info],
-              [
-                "welcome_message",
-                config.welcome_message || defaultConfig.welcome_message,
-              ],
-            ]),
+          mapToCapabilities,
+          mapToEditPanelValues,
         });
       }
 
-      // Menu navigation
-      const menuItems = document.querySelectorAll(".menu-item");
-      const pageSections = document.querySelectorAll(".page-section");
+      function showPage(pageId) {
+        const pages = document.querySelectorAll(".page");
+        pages.forEach((page) => page.classList.remove("active"));
 
-      menuItems.forEach((item) => {
-        item.addEventListener("click", () => {
-          const targetPage = item.getAttribute("data-page");
+        const menuItems = document.querySelectorAll(".menu-item");
+        menuItems.forEach((item) => item.classList.remove("active"));
 
-          menuItems.forEach((mi) => mi.classList.remove("active"));
-          item.classList.add("active");
+        document.getElementById(pageId).classList.add("active");
+        event.target.closest(".menu-item").classList.add("active");
 
-          pageSections.forEach((section) => {
-            section.classList.remove("active");
-            if (section.id === targetPage) {
-              section.classList.add("active");
-            }
-          });
+        if (window.innerWidth <= 768) {
+          document.getElementById("sidebar").classList.remove("active");
+        }
+      }
+
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("active");
+      }
+
+      function showAddLandForm() {
+        const message = document.createElement("div");
+        message.style.cssText =
+          "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%); color: white; padding: 20px 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; font-size: 16px;";
+        message.textContent = "Formulir tambah lahan akan dibuka";
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 2000);
+      }
+
+      const progressCtx = document.getElementById("progressChart");
+      if (progressCtx) {
+        new Chart(progressCtx, {
+          type: "line",
+          data: {
+            labels: [
+              "Minggu 1",
+              "Minggu 2",
+              "Minggu 3",
+              "Minggu 4",
+              "Minggu 5",
+              "Minggu 6",
+              "Minggu 7",
+              "Minggu 8",
+            ],
+            datasets: [
+              {
+                label: "Padi Sawah A",
+                data: [10, 25, 35, 48, 58, 65, 72, 78],
+                borderColor: "#4a7c59",
+                backgroundColor: "rgba(74, 124, 89, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+              {
+                label: "Jagung B",
+                data: [15, 30, 45, 60, 75, 85, 92, 95],
+                borderColor: "#f39c12",
+                backgroundColor: "rgba(243, 156, 18, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                  callback: function (value) {
+                    return value + "%";
+                  },
+                },
+              },
+            },
+          },
         });
-      });
+      }
 
-      // Form submission handler
-      const fundingForm = document.getElementById("funding-form");
-      if (fundingForm) {
-        fundingForm.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const successMessage = document.createElement("div");
-          successMessage.style.cssText =
-            "position: fixed; top: 20px; right: 20px; background-color: #10B981; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;";
-          successMessage.textContent = "✅ Pengajuan proyek berhasil dikirim!";
-          document.body.appendChild(successMessage);
-
-          setTimeout(() => {
-            successMessage.remove();
-          }, 3000);
-
-          fundingForm.reset();
+      const profitCtx = document.getElementById("profitChart");
+      if (profitCtx) {
+        new Chart(profitCtx, {
+          type: "bar",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun"],
+            datasets: [
+              {
+                label: "Keuntungan (Juta Rp)",
+                data: [45, 52, 48, 58, 55, 60],
+                backgroundColor: "rgba(74, 124, 89, 0.8)",
+                borderColor: "#4a7c59",
+                borderWidth: 2,
+                borderRadius: 8,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return "Rp " + value + " Jt";
+                  },
+                },
+              },
+            },
+          },
         });
       }
     </script>
@@ -1954,7 +1787,7 @@
           if (b) {
             var d = b.createElement("script");
             d.innerHTML =
-              "window.__CF$cv$params={r:'99be6d2932b1fde2',t:'MTc2MjcwMzAxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+              "window.__CF$cv$params={r:'99beac6706a06014',t:'MTc2MjcwNTYwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
             b.getElementsByTagName("head")[0].appendChild(d);
           }
         }
